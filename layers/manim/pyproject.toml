@@ -1,0 +1,8 @@
+[project]
+name = "manim-layer"
+version = "0.1.0"
+description = "Capa 1 (Manim): animaciones matemáticas, 3D y científicas con soporte de canal alfa"
+requires-python = ">=3.10"
+dependencies = [
+    "manim>=0.18.1",
+]

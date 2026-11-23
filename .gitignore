@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Build & renders
+dist/
+build/
+out/
+output/*
+!output/.gitkeep
+layers/manim/media/
+layers/motion-canvas/output/
+layers/remotion/out/
+layers/remotion/public/layers/*
+!layers/remotion/public/layers/.gitkeep
+
+# Media caches & temporary files
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.wav
+*.tmp
+.cache/
+
+# Environment & OS
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.log
