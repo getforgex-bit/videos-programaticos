@@ -33,3 +33,6 @@ layers/remotion/public/layers/*
 .DS_Store
 Thumbs.db
 *.log
+
+# Copia de assets/fonts para Remotion (la genera el script de build)
+layers/remotion/public/fonts/

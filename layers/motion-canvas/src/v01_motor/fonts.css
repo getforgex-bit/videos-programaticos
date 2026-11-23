@@ -1,0 +1,11 @@
+/* Kalam (SIL OFL 1.1) — misma tipografía manuscrita que usan Manim y Remotion. */
+@font-face {
+  font-family: 'Kalam';
+  src: url('../../../../assets/fonts/Kalam-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Kalam';
+  src: url('../../../../assets/fonts/Kalam-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
