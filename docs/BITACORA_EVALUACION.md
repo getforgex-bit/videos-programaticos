@@ -10,43 +10,30 @@ Este documento centraliza el seguimiento de todos los videos producidos en la ra
 
 ## 1. Matriz de Seguimiento de Videos (Sesión `version-1`)
 
-| # | Idea | Estilo Visual | Versión | Estado | Puntaje Usuario | Documento Detallado |
+| # | Idea | Estilo Visual | Versión Activa | Estado | Puntaje Usuario | Documento Detallado |
 | :-: | :--- | :--- | :-: | :-: | :-: | :--- |
-| **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano** | `v1.0` | ✅ Renderizado / Esperando puntaje | _Pendiente_ | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
+| **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano (Boceto Sepia `v2.0`)** | `v2.0` | ✅ Corregido / Esperando puntaje | _Pendiente_ | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
 | **02** | _Por definir con el usuario_ | _Por definir_ | — | ⏳ En espera | — | — |
 | **03** | _Por definir con el usuario_ | _Por definir_ | — | ⏳ En espera | — | — |
 
 ---
 
-## 2. Catálogo de Referencia (3 Ideas × 9 Estilos Visuales)
-
-### Ideas de la Sesión
-- **Idea A — El motor invisible:** Motor funcionando → Carcasa transparente → Revelación de componentes internos → Corriente eléctrica y campo magnético provocan la rotación → Reconstrucción del motor. *(Enfoque: cinematográfico, revelación y precisión mecánica).*
-- **Idea B:** *(Pendiente de activación por el usuario)*
-- **Idea C:** *(Pendiente de activación por el usuario)*
-
-### Estilos Visuales (1 a 9)
-1. *(Pendiente / según selección del usuario)*
-2. **Whiteboard / Dibujo a mano:** Trazos que aparecen progresivamente, diagramas dibujados y explicaciones que se construyen visualmente. *(Activo en Video #01)*
-3. *(Pendiente / según selección del usuario)*
-4. *(Pendiente / según selección del usuario)*
-5. *(Pendiente / según selección del usuario)*
-6. *(Pendiente / según selección del usuario)*
-7. *(Pendiente / según selección del usuario)*
-8. *(Pendiente / según selección del usuario)*
-9. *(Pendiente / según selección del usuario)*
-
----
-
-## 3. Historial de Evaluaciones y Correcciones del Usuario
+## 2. Historial de Evaluaciones y Correcciones del Usuario
 
 ### Video 01 — Idea A (El motor invisible) · Estilo 2 (Whiteboard / Dibujo a mano)
 
-#### Iteración `v1.0` (Entrega Inicial)
-- **Archivo renderizado:** `output/final.mp4` (`1920x1080`, `30 FPS`, `30.0s / 900 frames`, con audio procedural)
-- **Puntaje del usuario:** _Pendiente de recibir_
-- **Lo que le gustó al usuario:** _Pendiente de recibir_
-- **Lo que NO le gustó / Correcciones solicitadas:** _Pendiente de recibir_
-- **Resumen de autocrítica previa (`v1.0`):**
-  - **Aciertos:** Fusión limpia de las 3 capas (`Manim` + `Motion Canvas` + `Remotion`) sobre el pizarrón usando `mix-blend-mode: multiply`; transición de transparencia de carcasa muy clara con línea de escaneo Rayos-X; sincronía matemática exacta entre ángulo de la espira 3D, chispazo del conmutador a $180^\circ$ y onda rectificada $\tau(\theta) = |\sin\theta|$.
-  - **Fallos / Puntos vigilados para iteración:** Densidad informativa alta en los Actos III y IV (coexisten el motor central, el circuito inferior izquierdo, la cadena causal inferior central y el osciloscopio inferior derecho); la perspectiva 2.5D de la espira es esquemática para priorizar legibilidad de los vectores de Lorentz ($\vec{F}$), pero podría enriquecerse con mayor número de espiras o grosor de núcleo laminado si el usuario prefiere aún más detalle mecánico.
+#### Iteración `v1.0` (Pizarrón Blanco Multipanel)
+- **Puntaje del usuario:** _Sin puntaje numérico aún (solicitó rediseño visual y de ritmo antes de calificar)_
+- **Lo que comentó el usuario:** *"Bien, pero el estilo visual no se parece a lo que yo me imaginaba, me imaginaba algo más cómo esto [`image.png`]... no lo copies tal cual pero haz que se parezca más a este boceto. Por cierto, necesito que sea mucho más dopaminérgico, siento que es aburrido. Necesito más cambios y efectos además de movimiento entre escenas. Reduce la cantidad de información mostrada en pantalla a la vez y preséntala dinámicamente a lo largo del video."*
+- **Lo que NO gustó de `v1.0`:**
+  1. Estética de pizarrón blanco tipo dashboard clínico en lugar de boceto orgánico a lápiz/carboncillo sepia sobre papel pergamino (`image.png`).
+  2. Ritmo plano y cámara estática (bajo nivel dopaminérgico).
+  3. Exceso de paneles y texto simultáneo en pantalla.
+
+#### Iteración `v2.0` (Rediseño Boceto Grafito/Sepia Dopaminérgico + Cámara Multi-Escena)
+- **Cambios aplicados en `v2.0`:**
+  1. **Nuevo Estilo Visual inspirado en `image.png`:** Papel pergamino sepia envejecido, trazos gruesos de carboncillo/grafito sepia (`#362312`), sombreado diagonal denso a mano (`///`), imanes laterales en herradura (`N` y `S`), núcleo central cuadrado redondeado de doble pared con 4 postes de escobillas, ejes horizontales escalonados y flechas de Fuerza de Lorentz `F` de doble contorno.
+  2. **Cámara Dinámica y Ritmo Dopaminérgico (6 escenas en 30s):** Whip-pans, macro zooms (`1.50x`), inclinaciones dinámicas, sacudidas de cámara en impactos (*camera shake*), ondas de choque expansivas, líneas de velocidad radiales, explosiones de chispas cada $180^\circ$ y nueva pista de audio con *whooshes* e impactos *sub-bass*.
+  3. **Mínima Información Simultánea:** Se eliminaron todas las cajas laterales y tablas permanentes; ahora solo aparece **1 título cinético corto a la vez** con animación elástica.
+- **Puntaje del usuario (`v2.0`):** _Pendiente de recibir_
+- **Feedback adicional (`v2.0`):** _Pendiente de recibir_

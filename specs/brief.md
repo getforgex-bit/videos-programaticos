@@ -9,41 +9,30 @@
 
 ---
 
-## 2. Video Activo (#1): Idea A + Estilo 2
+## 2. Video Activo (#1): Idea A + Estilo 2 (`v2.0` — Boceto Grafito/Sepia Dopaminérgico)
 
 ### Concepto General
 - **Idea:** **Idea A — El motor invisible**
   - *Sinopsis:* Comenzamos con un motor funcionando. Su carcasa se vuelve transparente, aparecen sus componentes internos y descubrimos cómo una corriente eléctrica provoca la rotación. Al final, reconstruimos el motor.
-  - *Enfoque:* Cinematográfico, revelación progresiva y precisión mecánica.
-- **Estilo Visual:** **2. Whiteboard / Dibujo a mano**
-  - *Lenguaje gráfico:* Trazos que aparecen progresivamente, diagramas dibujados a mano con marcadores de pizarrón (tinta negra carbón, grafito de construcción, azul cobalto magnético, rojo carmesí eléctrico, cobre/ámbar para bobinas y verde esmeralda para vectores de fuerza de Lorentz) y explicaciones físicas que se construyen visualmente en tiempo real.
+  - *Enfoque:* Cinematográfico, revelación progresiva, precisión mecánica y alto impacto dopaminérgico.
+- **Estilo Visual:** **2. Whiteboard / Dibujo a mano (Boceto de Carboncillo y Grafito Sepia sobre Pergamino)**
+  - *Lenguaje gráfico (inspirado en `image.png`):* Papel pergamino envejecido (`#EFE1C6` → `#C8AE86`), trazos gruesos de carboncillo/grafito sepia (`#362312`) con sombreado diagonal denso a mano (`///`), imanes gigantes en herradura a izquierda (`N`) y derecha (`S`), cámara central cuadrada redondeada de doble pared con 4 terminales de escobillas, flechas `F` de doble contorno y **1 sola idea cinética en pantalla a la vez**.
 
 ### Especificaciones Técnicas
 - **Resolución:** `1920x1080` (16:9 Full HD)
 - **FPS:** `30`
 - **Duración:** `30 segundos` (`900 frames`)
-- **Audio:** Pista procedural sincronizada (`assets/whiteboard_motor_sfx.wav` / `layers/remotion/public/audio/whiteboard_motor_sfx.wav`) con sonido de trazos de marcador sobre pizarrón, zumbido electromagnético al inyectar corriente, chasquido de conmutación y aceleración mecánica del rotor.
+- **Audio:** Pista dopaminérgica sincronizada (`layers/remotion/public/audio/whiteboard_motor_sfx.wav`) con *whooshes* de cámara en cada cambio de escena, impactos *sub-bass*, trazos rápidos de carboncillo, chispazos eléctricos cada $180^\circ$ y pulso rítmico de motor.
 
 ---
 
-## 3. Escaleta Cinematográfica (900 Frames @ 30 FPS)
+## 3. Escaleta Dopaminérgica de 6 Escenas (900 Frames @ 30 FPS)
 
-| Acto | Tiempo | Frames | Escena / Acción Principal | Capas Activas |
+| Escena | Tiempo | Frames | Movimiento de Cámara y Acción Visual | Título Cinético Único |
 | :--- | :--- | :--- | :--- | :--- |
-| **Acto I: El Motor en Marcha** | `0:00 - 0:06` | `0 - 180` | Un marcador traza en vivo los ejes isométricos y dibuja la carcasa aleteada del motor, sus soportes y el eje. Al completarse el trazo, el eje cobra vida girando a `3,000 RPM` con arcos cinéticos y marcas de vibración dibujadas a mano. | **Remotion** (Pizarrón + Motor Exterior) + **Manim** (Telemetría cinemática) |
-| **Acto II: La Revelación (Carcasa Transparente)** | `0:06 - 0:12` | `180 - 360` | Barrido de rayos X / borrador parcial: la carcasa sólida pasa a líneas fantasma punteadas (`20%` opacidad). En su interior se dibujan progresivamente el **Estator** (imanes $N$ rojo / $S$ azul), el **Rotor bobinado** (cobre) y el **Conmutador con escobillas**. | **Remotion** (Transición X-Ray) + **Motion Canvas** (Cotas y esquema de despiece) |
-| **Acto III: El Secreto Electromagnético (Fuerza de Lorentz)** | `0:12 - 0:19` | `360 - 570` | Se trazan las líneas de campo magnético $\vec{B}$ ($N \to S$). Al cerrarse el circuito DC, pulsos de corriente $I$ recorren las escobillas y la espira. Surgen los vectores de Fuerza de Lorentz ($\vec{F} = I\vec{L} \times \vec{B}$) creando el par de rotación ($\vec{\tau}$). | **Manim** (Vectores $\vec{B}, \vec{I}, \vec{F}$ y ecuación de Lorentz) + **Motion Canvas** (Circuito eléctrico) + **Remotion** |
-| **Acto IV: Conmutación y Rotación Continua** | `0:19 - 0:24` | `570 - 720` | Detalle sincronizado del colector de delgas: al cruzar los $180^\circ$, el conmutador invierte la polaridad de la corriente en la espira para mantener el torque siempre positivo ($\tau \propto |\sin\theta|$). Osciloscopio dibujado a mano en tiempo real. | **Manim** (Osciloscopio de torque rectificado $\tau(\theta)$) + **Motion Canvas** (Diagrama de inversión de delgas) |
-| **Acto V: Reconstrucción Mecánica** | `0:24 - 0:30` | `720 - 900` | La cámara hace pullback cinematográfico. Mientras el núcleo electromagnético sigue girando con sus vectores activos, los trazos de la carcasa exterior, tapas y pernos se vuelven a dibujar y ensamblar con ventana de memoria translúcida. | **Remotion** + **Manim** + **Motion Canvas** (Cierre de plano maestro y sello de ingeniería) |
-
----
-
-## 4. Distribución de la Arquitectura Híbrida por Capas
-- **Capa 1 — Manim / Python Científico (`layers/manim/`):**
-  - Escena Manim (`layers/manim/scenes/motor_physics_scene.py`) y generador matemático de precisión (`layers/manim/generate_whiteboard_layer.py`).
-  - Produce el clip de pizarrón científico (`layers/remotion/public/layers/manim_whiteboard_physics.webm`) con la gráfica del osciloscopio de par motor rectificado $\tau(\theta) = \tau_{\max}|\sin\theta|$, el diagrama vectorial 3D de la Regla de la Mano Derecha ($\vec{I} \times \vec{B} = \vec{F}$) y exporta las trayectorias físicas exactas (`manim_physics_data.json`).
-- **Capa 2 — Motion Canvas (`layers/motion-canvas/`):**
-  - Escena vectorial (`layers/motion-canvas/src/scenes/motorCircuitWhiteboard.tsx`) y exportador de capa (`layers/motion-canvas/render_circuit_layer.mjs`).
-  - Produce el diagrama esquemático animado de alimentación DC, flujo de electrones y conmutación de escobillas (`layers/remotion/public/layers/motion_canvas_circuit.webm`).
-- **Capa 3 — Remotion (`layers/remotion/`):**
-  - Compositor maestro 1080p a 30fps (`MainVideo.tsx`), superficie de pizarrón con textura de cuadrícula milimétrica, motor isométrico 2.5D dibujado trazo a trazo con cursor de marcador dinámico, integración de capas `.webm` con modo de fusión de tinta (`multiply`), caligrafía técnica manuscrita y pista de audio procedural.
+| **Escena 1: Motor en Marcha** | `0:00 - 0:04` | `0 - 120` | Punch-in rápido (`1.38x -> 1.02x`) + sacudida de arranque en frame 38. Se traza la carcasa blindada con aletas y los ejes laterales escalonados girando a `3,000 RPM` con líneas de velocidad radiales. | `01 · EL MOTOR EN MARCHA — ACERO SELLADO · 3,000 RPM` |
+| **Escena 2: Revelación Rayos-X** | `0:04 - 0:08` | `120 - 240` | Onda de choque circular disuelve la carcasa a líneas fantasma (`14%`). Whip-pan a izquierda al clavarse el imán en herradura `N`, whip-pan a derecha al clavarse el imán `S` y aparición del núcleo central cuadrado redondeado con 4 terminales. | `02 · REVELACIÓN RAYOS-X — IMANES (N / S) + NÚCLEO INTERNO` |
+| **Escena 3: Macro Zoom Corriente** | `0:08 - 0:12.5` | `240 - 375` | Macro zoom (`1.50x`) + paneo diagonal sobre los postes de escobillas. Entran las flechas curvas de corriente (`+I / -I`, **Capa 2**), se encienden los conductores internos y cruzan las ondas de campo magnético $\vec{B}$ ($N \to S$). | `03 · ENERGÍA INVISIBLE — LA CORRIENTE (I) CRUZA EL CAMPO (N → S)` |
+| **Escena 4: Explosión de Fuerza `F`** | `0:12.5 - 0:18` | `375 - 540` | Snap-zoom con sacudida de impacto (`26px`) y órbita dinámica. Estallan las dos flechas gigantes **`F`** de doble contorno con ondas expansivas doradas y los arcos punteados en `N` (`↑`) y `S` (`↓`) acelerando el rotor. | `04 · LEY DE LORENTZ: F = I × B — ¡EXPLOSIÓN DE FUERZA (F) Y PAR DE GIRO!` |
+| **Escena 5: Conmutación 180°** | `0:18 - 0:24` | `540 - 720` | Zoom rítmico sincronizado con las explosiones de chispas en los 4 contactos cada $180^\circ$. Las flechas internas invierten sentido y **Capa 1 (Manim)** traza una cinta limpia de pulso de torque (`/\ /\ /\`) al pie del pergamino. | `05 · EL SECRETO DEL COLECTOR — INVERSIÓN CADA 180° → ¡EMPUJE CONTINUO!` |
+| **Escena 6: Reconstrucción** | `0:24 - 0:30` | `720 - 900` | Pullback dramático (`1.26x -> 1.00x`) con 3 golpes mecánicos secos mientras las placas blindadas exteriores se re-ensamblan sobre el núcleo activo a `3,000 RPM`. | `06 · MOTOR RECONSTRUIDO — ELECTRICIDAD CONVERTIDA EN ROTACIÓN` |
