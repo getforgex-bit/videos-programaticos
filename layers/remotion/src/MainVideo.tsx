@@ -6,6 +6,7 @@ import {
   staticFile,
   useCurrentFrame,
 } from 'remotion';
+import {CreativeSceneTransitions} from './CreativeSceneTransitions';
 import {IsometricMotorWhiteboard} from './IsometricMotorWhiteboard';
 import {ManimOscilloscopeLayer} from './ManimOscilloscopeLayer';
 import {MotionCanvasCircuitLayer} from './MotionCanvasCircuitLayer';
@@ -14,16 +15,8 @@ import {WhiteboardAnnotations} from './WhiteboardAnnotations';
 import {getMotorStateAtFrame} from './handDrawnUtils';
 
 /**
- * Compositor Maestro por Capas (Remotion — Capa 3 · v3.0)
- * Video 1: Idea A ("El motor invisible") · Estilo 2 ("Boceto Grafito/Sepia Dopaminérgico v3.0")
- *
- * Incluye:
- * - Capa 0: Papel pergamino reactivo (ReactiveParchmentBackground) con limaduras de grafito periféricas,
- *   anillos de compás Da Vinci y ondas acústicas/magnéticas que reaccionan al motor sin sobrecargar.
- * - Capa 1 (Manim): Pulso de torque rectificado τ(θ) = |sin(θ)|
- * - Capa 2 (Motion Canvas): Polaridad dinámica en terminales
- * - Capa 3 (Remotion): Tambor cilíndrico horizontal 3D coherente con el eje horizontal, colector en el eje,
- *   catapulta magnética de líneas de campo deformables + vórtices B_I, y apertura tipo Clamshell.
+ * Compositor Maestro por Capas (Remotion — Capa 3 · v4.0 Edición Pulido Maestro)
+ * Video 1: Idea A ("El motor invisible") · Estilo 2 ("Boceto Grafito/Sepia Dopaminérgico v4.0")
  */
 export const MainVideo: React.FC = () => {
   const frame = useCurrentFrame();
@@ -74,9 +67,7 @@ export const MainVideo: React.FC = () => {
 
       <Audio src={staticFile('audio/whiteboard_motor_sfx.wav')} volume={0.92} />
 
-      {/* =====================================================================
-          CAPA 0A: PAPEL PERGAMINO / CUADERNO DE BOCETO SEPIA
-         ===================================================================== */}
+      {/* CAPA 0A: PAPEL PERGAMINO / CUADERNO DE BOCETO SEPIA */}
       <AbsoluteFill
         style={{
           backgroundImage: `
@@ -87,14 +78,10 @@ export const MainVideo: React.FC = () => {
         }}
       />
 
-      {/* =====================================================================
-          CAPA 0B: ELEMENTOS DE FONDO REACTIVOS Y SUTILES (Limaduras, Compás Da Vinci, Ondas)
-         ===================================================================== */}
+      {/* CAPA 0B: ELEMENTOS DE FONDO REACTIVOS Y SUTILES */}
       <ReactiveParchmentBackground state={state} />
 
-      {/* =====================================================================
-          MUNDO CON CÁMARA DINÁMICA (WHIP-PANS, MACRO ZOOMS, INCLINACIÓN Y SHAKE)
-         ===================================================================== */}
+      {/* MUNDO CON CÁMARA DINÁMICA + CARGA/DESCARGA BAJO DEMANDA */}
       <AbsoluteFill
         style={{
           transform: `translate(${camera.tx.toFixed(1)}px, ${camera.ty.toFixed(1)}px) scale(${camera.scale.toFixed(4)}) rotate(${camera.rotateDeg.toFixed(2)}deg)`,
@@ -105,14 +92,13 @@ export const MainVideo: React.FC = () => {
         <MotionCanvasCircuitLayer state={state} />
       </AbsoluteFill>
 
-      {/* =====================================================================
-          CAPA 1 (MANIM): CINTA DE PULSO DE TORQUE RECTIFICADO (Escena 5)
-         ===================================================================== */}
+      {/* CAPA 1 (MANIM): CINTA DE PULSO DE TORQUE RECTIFICADO (Escena 5) */}
       <ManimOscilloscopeLayer state={state} />
 
-      {/* =====================================================================
-          VIÑETA CINEMATOGRÁFICA Y DESTELLO DE IMPACTO DOPAMINÉRGICO
-         ===================================================================== */}
+      {/* CAPA DE 5 TRANSICIONES ARTESANALES ENTRE ESCENAS (Compás, Carboncillo, Lupa, Relámpago, Reglas T) */}
+      <CreativeSceneTransitions state={state} />
+
+      {/* VIÑETA CINEMATOGRÁFICA Y DESTELLO DE IMPACTO DOPAMINÉRGICO */}
       <AbsoluteFill
         style={{
           boxShadow: `inset 0 0 ${110 + camera.vignettePulse * 70}px rgba(42, 24, 10, ${0.38 + camera.vignettePulse * 0.22})`,
@@ -122,15 +108,13 @@ export const MainVideo: React.FC = () => {
       {camera.flash > 0.01 && (
         <AbsoluteFill
           style={{
-            backgroundColor: `rgba(255, 243, 214, ${(camera.flash * 0.35).toFixed(3)})`,
+            backgroundColor: `rgba(255, 243, 214, ${(camera.flash * 0.32).toFixed(3)})`,
             pointerEvents: 'none',
           }}
         />
       )}
 
-      {/* =====================================================================
-          CAPA 3B (HUD MINIMALISTA): 1 SOLA IDEA CINÉTICA A LA VEZ
-         ===================================================================== */}
+      {/* CAPA 3B: CARTELA MANUSCRITA DE CUADERNO DE INVENTOR */}
       <WhiteboardAnnotations state={state} />
     </AbsoluteFill>
   );

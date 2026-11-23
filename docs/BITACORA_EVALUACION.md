@@ -12,9 +12,10 @@ Este documento centraliza el seguimiento de todos los videos producidos en la ra
 
 | # | Idea | Estilo Visual | Versión | Estado | Puntaje Promedio | Meta Mínima | Documento Detallado |
 | :-: | :--- | :--- | :-: | :-: | :-: | :-: | :--- |
-| **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano (Boceto Sepia)** | `v1.0` | 🔄 Reemplazada por cambio de estilo | _S/C_ | `85/100` | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
+| **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano** | `v1.0` | 🔄 Reemplazada por cambio de estilo | _S/C_ | `85/100` | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
 | **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano (Boceto Sepia)** | `v2.0` | ⚠️ Evaluada (`69.5/100` < `85`) | **`69.5 / 100`** | `85/100` | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
-| **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano (Boceto Sepia)** | `v3.0` | 🚀 Corregida (Rotor Horizontal 3D + Campo Magnético Deformable + Fondo Reactivo) | _Pendiente_ | `85/100` | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
+| **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano (Boceto Sepia)** | `v3.0` | ✅ Aprobada 1ª Tanda (`88.0/100` >= `85`) | **`88.0 / 100`** | `85/100` | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
+| **01** | **Idea A — El motor invisible** | **2. Whiteboard / Dibujo a mano (Boceto Sepia)** | `v4.0` | 🌟 Pulido Maestro (Carga/Descarga Bajo Demanda + 5 Transiciones Creativas + Explicación Visual de Vórtices + Trazo Humano No-IA) | _Pendiente 2ª Tanda_ | `> 90/100` | [`docs/video-01-idea-a-estilo-02-whiteboard.md`](./video-01-idea-a-estilo-02-whiteboard.md) |
 
 ---
 
@@ -22,37 +23,36 @@ Este documento centraliza el seguimiento de todos los videos producidos en la ra
 
 ### Video 01 — Idea A (El motor invisible) · Estilo 2 (Whiteboard / Dibujo a mano)
 
-#### Evaluación de la Versión `v2.0`
-| Criterio Evaluado | Puntaje | Comentario Textual del Usuario |
-| :--- | :-: | :--- |
-| **Creatividad** | **`40 / 100`** | Requiere soluciones visuales más ingeniosas y menos literales/planas. |
-| **Diseño** | **`85 / 100`** | *"Bastante apegado a lo esperado pero puede mejorarse aún."* |
-| **Animaciones** | **`75 / 100`** | *"Se notan muy fluidas e impresionan, también el ritmo es el correcto, sin embargo siguen siendo muy básicas (tipo girar, rotar, mover de A a B lo cual no es malo pero hay algunos elementos que se sienten que deberían tener otras animaciones cómo los campos electromagnéticos que no se entienden)."* |
-| **Coherencia temporal** | **`99 / 100`** | *"Me parece muy coherente y eso está bien, aunque quizás hayan detalles finos que no he notado."* |
-| **Coherencia visual** | **`89 / 100`** | *"Me parece muy coherente y eso está bien, aunque quizás hayan detalles finos que no he notado. Pero aún le hace falta refinar pequeños detalles."* |
-| **Coherencia de conceptos y diseño visual** | **`29 / 100`** | *"Hay elementos que no tienen sentido, cómo el rotor que está horizontal y el giro que se muestra en el centro más adelante en el video se muestra cómo si fuera el rotor vertical."* |
-| **PROMEDIO FINAL (`v2.0`)** | **`69.5 / 100`** | *"Es insuficiente, debes de alcanzar por lo menos el 85/100."* |
+#### Evaluación Comparativa `v2.0` vs `v3.0`
 
-- **Observación adicional clave sobre el fondo (`v2.0`):**
-  > *"El fondo parece monótono y no reacciona a las animaciones del motor, está bien y la verdad no me gustaría sobrecargar la imagen pero si tuviera elementos sutiles que reaccionen a los elementos principales siento que le daría puntos."*
+| Criterio Evaluado | Puntaje `v2.0` | Puntaje `v3.0` | Evolución | Comentario Textual del Usuario sobre `v3.0` |
+| :--- | :-: | :-: | :-: | :--- |
+| **Creatividad** | `40 / 100` | **`66 / 100`** | `+26` | *"Has mejorado pero sigue siendo algo común. Me encantan las transiciones y la forma en la que lo manejaste, siento que podrías añadir distintos tipos de transiciones para aumentar la fluidez y que se sienta mejor pensado y por ende más creativo."* |
+| **Diseño** | `85 / 100` | **`89 / 100`** | `+4` | *"Me agrada más por sus líneas y los detalles que has añadido, pero aún parece muy hecho por IA. También hay partes que se sobrecargan; quizás deberías implementar descarga y carga de elementos bajo demanda de tal forma que no aparezcan todos al mismo tiempo, pero que a su vez cada uno tenga su momento de brillar."* |
+| **Animaciones** | `75 / 100` | **`90 / 100`** | `+15` | *"La fluidez se ha mantenido, el ritmo me importa y me gusta, pero hay elementos que todavía no se entienden, cómo los vórtices de corriente y el campo tensado; si no te los explican no se entiende qué hacen (se entiende el movimiento mejor que antes pero ahora no se entiende el por qué ni sus interacciones)."* |
+| **Coherencia temporal** | `99 / 100` | **`99 / 100`** | `=` | *"Se mantiene porque he revisado que hay pequeños detalles que son confusos, cómo en el momento en el que se abre el motor para mostrar su interior, no es que no se entienda sino que da una pequeña sensación de '¿qué pasó con los elementos que lo conforman aquí?!' pero en cuanto lo piensas en 1s toma coherencia..."* |
+| **Coherencia visual** | `89 / 100` | **`99 / 100`** | `+10` | *"Hay rasgos que se entrelazan con los datos de la coherencia temporal porque es muy similar la conclusión, pero está excelente."* |
+| **Coherencia de conceptos y diseño visual** | `29 / 100` | **`85 / 100`** | `+56` | *"Me agrada, pero hay pequeños detalles que pulir aún."* |
+| **PROMEDIO FINAL** | **`69.5 / 100`** | **`88.0 / 100`** | **`+18.5`** | *"Ya pasa esta primera tanda de pruebas pero me gustaría que hagas una V4 refinando los últimos detalles y preparándola para la siguiente tanda de pruebas que medirán cosas distintas (aunque algunas similares) y serán más críticas."* |
 
 ---
 
-## 3. Correcciones Implementadas en `v3.0` para Superar el `85/100`
+## 3. Plan de Ingeniería y Refinamiento Maestro en `v4.0`
 
-1. **Corrección Total de Coherencia Mecánica y Física (`29/100` → Objetivo `95+/100`):**
-   - **Problema en `v2.0`:** Los ejes laterales eran **horizontales**, pero la espira central se estrechaba horizontalmente ($\cos\theta$ en $X$) como si girara alrededor de un eje **vertical**, contradiciendo la mecánica del motor.
-   - **Solución en `v3.0`:** Construimos un **Tambor de Rotor Cilíndrico Horizontal 3D** montado sobre el **eje horizontal continuo (`y = 540`)**, con el **colector de delgas cilíndrico** sobre ese mismo eje tocando las escobillas superiores e inferiores. Las 4 bobinas de cobre recorren el tambor horizontalmente y **giran alrededor del eje horizontal** ($y(\theta) = 540 + R\sin\theta$, profundidad $z(\theta) = R\cos\theta$), pasando por delante del eje central cuando $z > 0$ y por detrás cuando $z < 0$, en perfecta sincronía con los ejes salientes izquierdo y derecho.
-2. **Nueva Animación Física Comprensible del Campo Electromagnético (`75/100` → Objetivo `95+/100`):**
-   - **Problema en `v2.0`:** El campo magnético eran solo 5 líneas rectas punteadas azules que no explicaban cómo empujan al rotor.
-   - **Solución en `v3.0`:**
-     - **Líneas de flujo dipolar curvas (`N → S`)** con partículas de limadura de hierro que fluyen desde los polos en herradura hacia el entrehierro.
-     - **Vórtices magnéticos concéntricos ($\vec{B}_I$)** alrededor de los conductores cuando entra la corriente $I$, y **deformación elástica ("efecto catapulta magnética")** de las líneas de campo $\vec{B}$, mostrando visualmente cómo las líneas de flujo se comprimen bajo un conductor y se tensan para catapultarlo hacia arriba/abajo generando el par de Lorentz ($\vec{F} = I\vec{L} \times \vec{B}$).
-3. **Fondo Pergamino Reactivo y Sutil (`Otras observaciones`):**
-   - **Anillos de compás Da Vinci y partículas de limadura de grafito** sutiles en el papel pergamino que:
-     - Vibran con ondas acústicas concéntricas cuando el motor arranca a `3,000 RPM`.
-     - Se orientan siguiendo las líneas de flujo dipolar cuando se activa el campo magnético.
-     - Emiten una onda de presión sutil sobre la fibra del papel en cada conmutación de $180^\circ$ y en cada impacto mecánico, sin sobrecargar la imagen.
-4. **Salto en Creatividad y Refinamiento de Diseño (`40/100` y `85/100` → Objetivo `92+/100`):**
-   - **Despiece mecánico creativo (Clamshell X-Ray Peel):** En la Escena 2, los 4 pernos de la carcasa giran, se desenroscan y las mitades superior e inferior del blindaje se abren físicamente hacia arriba y hacia abajo antes de quedar como contorno fantasma.
-   - **Eliminación de solapamientos finos:** Los rótulos cinéticos se posicionan con margen limpio sin tocar las flechas `F` de doble contorno.
+1. **Sistema de Carga y Descarga Bajo Demanda (*Spotlight Staging* — Diseño `89 -> 96+`):**
+   - Cada componente tiene una ventana de protagonismo (`spotlight = 1.0`) y luego se **descarga o atenúa a trazo fantasma de referencia (`0.18 - 0.30`)** cuando otro elemento pasa al frente, evitando que la pantalla acumule capas simultáneas.
+   - **Continuidad temporal al abrir el motor (Escena 2):** El tambor horizontal y el eje ya están presentes dentro del blindaje desde el frame 115, de modo que al abrirse las valvas superior e inferior de la carcasa se *descubre* el interior de forma continua sin el vacío de 1 segundo detectado en `v3.0`.
+2. **Explicación Visual Auto-Contenida de los Vórtices y el Campo Tensado (`Animaciones 90 -> 97+`):**
+   - Durante las Escenas 3 y 4, descargamos el ruido periférico y mostramos con claridad causal **por qué** interactúan el vórtice de la corriente y el campo de los imanes:
+     - **Debajo del cable (`CHOQUE DE CAMPOS + +`):** Las flechas del remolino magnético de la corriente apuntan en el **mismo sentido (`→ →`)** que el campo `N → S`, sumándose y creando un **colchón de alta presión magnética** (sombreado ámbar comprimido como un resorte) que empuja el cable hacia arriba.
+     - **Encima del cable (`CANCELACIÓN - -`):** Las flechas del remolino apuntan en **sentido opuesto (`← →`)** al campo `N → S`, cancelándose y creando una zona de baja presión hacia donde el cable es lanzado (`↑ EMPUJE F`).
+     - Anotaciones manuscritas directas sobre el papel con flechas curvas (`"Se suman (+ +): Alta Presión"`, `"Se restan (- -): Vacío"`, `"¡Catapulta hacia arriba ↑F!"`) que se cargan solo en ese instante y se descargan al pasar a la Escena 5.
+3. **5 Transiciones Artesanales Distintas entre Escenas (`Creatividad 66 -> 95+`):**
+   - **T1 (Escena 1→2):** *Trazo de Compás Da Vinci (`360°` arc wipe)* que desatornilla los pernos y abre el blindaje.
+   - **T2 (Escena 2→3):** *Barrido de Carboncillo (Charcoal Brush Wipe)* con trazos diagonales de grafito que barren la escena hacia el macro zoom.
+   - **T3 (Escena 3→4):** *Lupa / Iris de Leonardo* con mira reticulada que se cierra sobre el conductor con corriente y estalla al liberarse la Fuerza de Lorentz.
+   - **T4 (Escena 4→5):** *Arco Eléctrico de Conmutación* (relámpago dibujado a mano que cruza verticalmente entre las escobillas $B_+$ y $B_-$).
+   - **T5 (Escena 5→6):** *Pliegue de Plano Maestro (Blueprint Snap Lines)* donde reglas de construcción convergen desde las 4 esquinas para cerrar y atornillar el motor.
+4. **Acabado Humano "No-IA" (`Diseño 89 -> 96+`):**
+   - Se eliminan las cajas CSS con bordes redondeados uniformes de los títulos; ahora los títulos se trazan directamente sobre una **franja de papel de boceto rasgado / cinta de dibujo con líneas de construcción sobrepasadas (*architectural overshoots*) y doble pasada de lápiz**.
+   - Se añaden múltiples pasadas de grafito con presión variable y marcas de construcción de cuaderno de inventor.

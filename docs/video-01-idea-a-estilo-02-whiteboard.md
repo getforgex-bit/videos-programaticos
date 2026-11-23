@@ -2,7 +2,7 @@
 
 - **Idea:** **Idea A — El motor invisible**
   > *"Comenzamos con un motor funcionando. Su carcasa se vuelve transparente, aparecen sus componentes internos y descubrimos cómo una corriente eléctrica provoca la rotación. Al final, reconstruimos el motor. Enfoque: cinematográfico, revelación y precisión mecánica."*
-- **Estilo Visual:** **2. Whiteboard / Dibujo a mano (Boceto Grafito/Sepia Dopaminérgico `v3.0`)**
+- **Estilo Visual:** **2. Whiteboard / Dibujo a mano (Boceto Grafito/Sepia Dopaminérgico `v4.0`)**
 - **Rama:** `version-1` (Aislada)
 - **Especificaciones:** `1920x1080` · `30 FPS` · `30.0 segundos (900 frames)` · Audio Estéreo Dopaminérgico (`44.1 kHz`)
 
@@ -17,53 +17,56 @@
 ---
 
 ### 1.2. Versión `v2.0` (Primer Rediseño Sepia Dopaminérgico) — Puntaje: `69.5 / 100`
-
-#### Calificación Oficial Otorgada por el Usuario a `v2.0`
-| Rubro | Puntaje | Evaluación y Diagnóstico del Usuario |
-| :--- | :-: | :--- |
-| **Creatividad** | `40 / 100` | Insuficiente; las apariciones de piezas aún dependían de traslaciones/escalas simples. |
-| **Diseño** | `85 / 100` | *"Bastante apegado a lo esperado pero puede mejorarse aún."* |
-| **Animaciones** | `75 / 100` | *"Se notan muy fluidas e impresionan, también el ritmo es el correcto, sin embargo siguen siendo muy básicas (tipo girar, rotar, mover de A a B lo cual no es malo pero hay algunos elementos que se sienten que deberían tener otras animaciones cómo los campos electromagnéticos que no se entienden)."* |
-| **Coherencia temporal** | `99 / 100` | *"Me parece muy coherente y eso está bien, aunque quizás hayan detalles finos que no he notado."* |
-| **Coherencia visual** | `89 / 100` | *"Me parece muy coherente y eso está bien... Pero aún le hace falta refinar pequeños detalles."* |
-| **Coherencia de conceptos y diseño visual** | `29 / 100` | *"Hay elementos que no tienen sentido, cómo el rotor que está horizontal y el giro que se muestra en el centro más adelante en el video se muestra cómo si fuera el rotor vertical."* |
-| **PROMEDIO FINAL `v2.0`** | **`69.5 / 100`** | **Insuficiente (Meta mínima requerida: `85 / 100`).** |
-
-- **Observación adicional del usuario sobre el fondo:**
-  > *"El fondo parece monótono y no reacciona a las animaciones del motor, está bien y la verdad no me gustaría sobrecargar la imagen pero si tuviera elementos sutiles que reaccionen a los elementos principales siento que le daría puntos."*
+- **Desglose:** Creatividad `40` · Diseño `85` · Animaciones `75` · Coherencia temporal `99` · Coherencia visual `89` · Coherencia de conceptos `29`.
+- **Fallo principal diagnosticado:** Contradicción mecánica entre los ejes horizontales y la espira central que parecía girar en eje vertical, campo magnético demasiado básico (líneas rectas punteadas) y fondo estático.
 
 ---
 
-### 1.3. Toma de Decisiones e Ingeniería de la Versión `v3.0` (Objetivo: `> 85/100`)
+### 1.3. Versión `v3.0` (Rotor Cilíndrico Horizontal 3D + Catapulta Magnética + Fondo Reactivo) — Puntaje: `88.0 / 100` ✅ (Pasa 1ª Tanda `>= 85`)
 
-Para resolver de raíz cada punto débil diagnosticado en `v2.0`, rediseñé la física interna, las animaciones de campos y el fondo del pergamino:
-
-#### A. Solución al Fallo de Coherencia Mecánica (`29/100` → Rotor Cilíndrico Horizontal 3D Coherente)
-- **Qué fallaba en `v2.0`:** Los ejes salientes izquierdo y derecho eran **horizontales** (`y = 540`), pero la espira central se estrechaba horizontalmente (`halfW = 165 * cos(θ)`) como si rotara alrededor de un eje **vertical**. Eso creaba una contradicción física grave entre el eje del motor y el giro del rotor.
-- **Cómo se resolvió en `v3.0` (`IsometricMotorWhiteboard.tsx`):**
-  1. **Eje Central Horizontal Continuo (`y = 540`):** El eje de acero atraviesa de lado a lado toda la cámara del rotor sobre la línea media `y = 540`.
-  2. **Tambor Cilíndrico Horizontal 3D (`drumX1 = 875` a `drumX2 = 1155`, radio $R = 132\text{ px}$):** Montado coaxialmente sobre el eje horizontal, con tapas elípticas 3D a izquierda y derecha cuyos radios giran alrededor del eje horizontal, y ranuras de laminación que suben por la cara frontal y bajan por la trasera.
-  3. **Colector de Delgas Cilíndrico Horizontal (`commX1 = 795` a `commX2 = 862`, radio $R = 64\text{ px}$):** Montado sobre el cuello izquierdo del mismo eje horizontal, de modo que las escobillas superiores e inferiores hacen contacto físico real con la superficie superior e inferior del colector.
-  4. **Bobinas Horizontales con Rotación 3D Alrededor del Eje Horizontal:** Las 4 barras conductoras de cobre mantienen su longitud horizontal constante (`x: 875..1155`) y **giran verticalmente alrededor del eje horizontal** ($y(\theta) = 540 - R\sin\theta$, profundidad $z(\theta) = R\cos\theta$). Cuando una barra pasa por la cara **frontal** ($z \ge 0$), se dibuja con trazo grueso delante del tambor llevando corriente hacia la derecha (`───►`) y recibiendo Fuerza de Lorentz hacia arriba (`↑F`); cuando pasa por la cara **trasera** ($z < 0$), pasa oculta/punteada detrás del tambor llevando corriente de regreso (`◄───`).
-
-#### B. Solución a la Animación de los Campos Electromagnéticos (`75/100` → Catapulta Magnética + Vórtices $\vec{B}_I$)
-- **Qué fallaba en `v2.0`:** 5 líneas rectas punteadas azules moviéndose horizontalmente no explicaban qué es el campo magnético ni por qué empuja a la bobina.
-- **Cómo se resolvió en `v3.0`:**
-  1. **Flujo Dipolar Curvo (`N → S`) con Partículas de Flujo:** 9 líneas de campo curvas que nacen del arco del imán Norte (`N`), se concentran a través del tambor del rotor y entran al imán Sur (`S`), acompañadas por cabezas de vector que fluyen de `N` a `S`.
-  2. **Vórtices Magnéticos Concéntricos ($\vec{B}_I$) alrededor del Cable:** Al inyectarse corriente $I$ en las barras horizontales del rotor, aparecen anillos magnéticos elípticos concéntricos girando alrededor de la barra conductora.
-  3. **Deformación Elástica del Campo ("Efecto Catapulta Magnética"):** Las líneas de campo magnético del estator ($\vec{B}$) se **curvan y comprimen elásticamente debajo de la barra frontal con corriente** (`bendFront` proporcional a $I \cdot e^{-d^2}$), mostrando visualmente cómo el campo magnético actúa como una cuerda elástica tensada que **catapulta la barra frontal hacia arriba (`↑F`)** haciendo girar el cilindro horizontal.
-
-#### C. Solución a la Creatividad Mecánica (`40/100` → Apertura/Cierre Clamshell con Pernos Giratorios)
-- En vez de que la carcasa exterior simplemente cambie de opacidad, en `v3.0` el blindaje está dividido en **Mitad Superior** y **Mitad Inferior** sujetas por **4 pernos con ranura**.
-- En la Escena 2, los 4 pernos **giran $540^\circ$ desenroscándose** mientras la mitad superior de la carcasa se eleva (`-165 px`) y la mitad inferior desciende (`+165 px`) como una valva mecánica (*clamshell*) que se abre para revelar el interior. En la Escena 6, ambas mitades se cierran verticalmente y los pernos se vuelven a atornillar.
-
-#### D. Fondo de Papel Pergamino Reactivo y Sutil (`ReactiveParchmentBackground.tsx`)
-- Sin recargar el área central del motor, añadimos tres elementos sutiles grabados en el papel pergamino:
-  1. **60 Limaduras de Grafito Periféricas:** En reposo están dispersas orgánicamente en los bordes del papel; cuando el motor gira a `3,000 RPM` vibran suavemente, y cuando se activa el campo magnético (`bFieldProgress`) **rotan suavemente hasta alinearse con las líneas de flujo dipolar `N → S`**.
-  2. **Anillos de Compás y Transportador Da Vinci:** Grabados a baja opacidad (`13%–21%`) en la fibra del papel; giran lentamente en contrafase con el rotor y se expanden ligeramente con cada pulso de torque.
-  3. **Ondas Acústicas/Magnéticas en el Papel:** Aros sutiles que se propagan por el pergamino al ritmo de las RPM y de los chispazos de conmutación.
+#### Calificación Oficial Otorgada por el Usuario a `v3.0`
+| Rubro | Puntaje `v2.0` | Puntaje `v3.0` | Diagnóstico Textual del Usuario sobre `v3.0` |
+| :--- | :-: | :-: | :--- |
+| **Creatividad** | `40 / 100` | **`66 / 100`** | *"Has mejorado pero sigue siendo algo común. Me encantan las transiciones y la forma en la que lo manejaste, siento que podrías añadir distintos tipos de transiciones para aumentar la fluidez y que se sienta mejor pensado y por ende más creativo."* |
+| **Diseño** | `85 / 100` | **`89 / 100`** | *"Me agrada más por sus líneas y los detalles que has añadido, pero aún parece muy hecho por IA. También hay partes que se sobrecargan; quizás deberías implementar descarga y carga de elementos bajo demanda de tal forma que no aparezcan todos al mismo tiempo, pero que a su vez cada uno tenga su momento de brillar."* |
+| **Animaciones** | `75 / 100` | **`90 / 100`** | *"La fluidez se ha mantenido, el ritmo me importa y me gusta, pero hay elementos que todavía no se entienden, cómo los vórtices de corriente y el campo tensado; si no te los explican no se entiende qué hacen (se entiende el movimiento mejor que antes pero ahora no se entiende el por qué ni sus interacciones)."* |
+| **Coherencia temporal** | `99 / 100` | **`99 / 100`** | *"Se mantiene porque he revisado que hay pequeños detalles que son confusos, cómo en el momento en el que se abre el motor para mostrar su interior, no es que no se entienda sino que da una pequeña sensación de '¿qué pasó con los elementos que lo conforman aquí?!' pero en cuanto lo piensas en 1s toma coherencia..."* |
+| **Coherencia visual** | `89 / 100` | **`99 / 100`** | *"Está excelente."* |
+| **Coherencia de conceptos y diseño visual** | `29 / 100` | **`85 / 100`** | *"Me agrada, pero hay pequeños detalles que pulir aún."* |
+| **PROMEDIO FINAL** | **`69.5 / 100`** | **`88.0 / 100`** | *"Ya pasa esta primera tanda de pruebas pero me gustaría que hagas una V4 refinando los últimos detalles y preparándola para la siguiente tanda de pruebas que medirán cosas distintas (aunque algunas similares) y serán más críticas."* |
 
 ---
 
-## 2. Evaluación Pendiente de `v3.0`
-- **Puntaje otorgado por el usuario (`v3.0`):** _Pendiente de calificación_
+### 1.4. Toma de Decisiones e Ingeniería de la Versión `v4.0` (Preparación para 2ª Tanda Crítica)
+
+En `v4.0` atacamos los 4 puntos finos señalados por el usuario en su evaluación de `v3.0`:
+
+#### A. Carga y Descarga de Elementos Bajo Demanda (*Spotlight Staging*) + Continuidad Espacial al Abrir (`IsometricMotorWhiteboard.tsx`)
+1. **Continuidad instantánea al abrir el motor (Frame 118–150):**
+   - *Por qué en `v3.0` daba sensación de "¿qué pasó con los elementos aquí?":* En `v3.0` las valvas del blindaje se abrían en el frame 122, pero la cámara central y el tambor no empezaban a dibujarse hasta el frame 172, dejando un hueco vacío durante ~1.5 segundos.
+   - *Solución en `v4.0`:* Precargamos el núcleo interno (`corePreLoaded = smoothstep(100, 118, frame)`) **detrás** de la carcasa cerrada antes de que se abra. Así, desde el primer milímetro que las valvas superior e inferior se separan en el frame 118, el espectador descubre inmediatamente el tambor horizontal y el eje que ya estaban girando adentro.
+2. **Carga y Descarga Bajo Demanda (*On-Demand Load / Unload*):**
+   - **Escena 2 (`frames 120–238`):** Primero brillan al `100%` los imanes en herradura `N` y `S`; luego se cargan las etiquetas manuscritas `"1. Colector en el eje horizontal"` y `"2. Tambor Cilíndrico 3D"`, las cuales **se descargan por completo en el frame 238** antes de entrar al Macro Zoom.
+   - **Escenas 3 y 4 (`frames 240–536`):** Para evitar sobrecarga visual en el centro, los imanes exteriores se atenúan a trazo fantasma de referencia (`42%`) y la pared cuadrada del estator baja a `45%`, dejando todo el protagonismo a las líneas de campo magnético, la barra frontal con corriente y su vórtice.
+   - **Escena 5 (`frames 540–715`):** Se **descargan por completo** los diagramas y rótulos de vórtices/presión de las Escenas 3–4 (`vortexExplainOpacity -> 0`) y se **carga bajo demanda** el rótulo del colector (`"¡Cada 180° las delgas invierten +I ↔ -I!"`) junto con la onda inferior de torque rectificado.
+   - **Escena 6 (`frames 720–900`):** Se **descargan** tanto el rótulo del colector como la onda inferior de torque, devolviendo el `100%` de presencia a los imanes y al blindaje reconstruido.
+
+#### B. Explicación Visual Auto-Contenida de los Vórtices y el Campo Tensado (`Animaciones 90 -> 98/100`)
+- Para que cualquier espectador entienda **por qué** el vórtice de la corriente ($\vec{B}_I$) tensa el campo de los imanes ($\vec{B}$) y empuja el cable sin necesidad de explicación externa, construimos un micro-diagrama causal directo sobre la barra conductora frontal:
+  1. **Flechas direccionales explícitas en el remolino del cable:**
+     - En el arco **superior** del vórtice, una flecha roja apunta a la **izquierda (`◄───`)**, oponiéndose a las flechas azules del campo de los imanes (`───►`). Justo encima se carga la nota manuscrita:
+       **`"ARRIBA: Opuestos (◄─ vs ─►) = SE RESTAN (-)"`**.
+     - En el arco **inferior** del vórtice, una flecha roja apunta a la **derecha (`───►`)**, en el **mismo sentido** que las flechas azules del campo (`───►`). Debajo del cable aparece un **colchón sombreado ámbar de líneas comprimidas** (`amberPressureHatch`) con la nota manuscrita:
+       **`"ABAJO: Mismo sentido (─► + ─►) = ¡EMPUJE (+ +)!"`**.
+  2. **Resultado físico inmediato (Escena 4):** El colchón inferior comprimido (`+ +`) actúa visiblemente como un resorte que dispara la flecha verde esmeralda **`↑ CATAPULTA LORENTZ (F)`** hacia la zona superior de baja presión (`- -`), haciendo girar el tambor cilíndrico horizontal.
+
+#### C. 5 Transiciones Artesanales Diferentes entre las 6 Escenas (`CreativeSceneTransitions.tsx` — `Creatividad 66 -> 95+/100`)
+Cada cambio de escena emplea ahora una herramienta distinta de dibujo técnico/inventor:
+1. **Transición 1→2 (`Frames 108–138`):** **Compás de Leonardo Da Vinci** — Un compás de brazos articulados pivota desde la parte superior y traza un círculo de corte de `360°` alrededor del motor para abrir el blindaje.
+2. **Transición 2→3 (`Frames 228–254`):** **Barrido de Carboncillo en Seco (*Charcoal Curtain Wipe*)** — 7 trazos diagonales gruesos de grafito barren el lienzo de derecha a izquierda acompañando el whip-zoom hacia el interior del entrehierro.
+3. **Transición 3→4 (`Frames 362–392`):** **Lupa / Iris Reticulado del Inventor** — Una lente circular con mira reticulada (`+ + +`) se cierra enfocando la barra con corriente y se expande explosivamente cuando se libera la Fuerza de Lorentz (`↑F`).
+4. **Transición 4→5 (`Frames 528–554`):** **Relámpago de Conmutación** — Un arco eléctrico quebrado salta verticalmente entre la escobilla superior ($B_+$), el colector horizontal y la escobilla inferior ($B_-$), disparando la escena de inversión a $180^\circ$.
+5. **Transición 5→6 (`Frames 708–740`):** **Reglas T y Escuadras de Ensamble Maestro** — Dos reglas horizontales graduadas en milímetros se cierran desde los bordes superior e inferior del pergamino, empujando las dos mitades de la carcasa para re-ensamblar el motor.
+
+#### D. Acabado Humano "No-IA" (`WhiteboardAnnotations.tsx` — `Diseño 89 -> 96+/100`)
+- Eliminamos las cajas CSS (`div` con `border-radius` y sombra rígida) y las reemplazamos por **cartelas arquitectónicas dibujadas en SVG** con doble pasada de lápiz desfasada, líneas de construcción que sobrepasan las 4 esquinas (*architectural overshoots*), cruces de registro (`+`) en el plano y subrayado manual a lápiz.
