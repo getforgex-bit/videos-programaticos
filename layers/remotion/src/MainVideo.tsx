@@ -9,12 +9,21 @@ import {
 import {IsometricMotorWhiteboard} from './IsometricMotorWhiteboard';
 import {ManimOscilloscopeLayer} from './ManimOscilloscopeLayer';
 import {MotionCanvasCircuitLayer} from './MotionCanvasCircuitLayer';
+import {ReactiveParchmentBackground} from './ReactiveParchmentBackground';
 import {WhiteboardAnnotations} from './WhiteboardAnnotations';
 import {getMotorStateAtFrame} from './handDrawnUtils';
 
 /**
- * Compositor Maestro por Capas (Remotion — Capa 3 · v2.0 Edición Boceto Sepia Dopaminérgico)
- * Video 1: Idea A ("El motor invisible") · Estilo 2 ("Whiteboard / Dibujo a mano — Boceto Grafito/Sepia")
+ * Compositor Maestro por Capas (Remotion — Capa 3 · v3.0)
+ * Video 1: Idea A ("El motor invisible") · Estilo 2 ("Boceto Grafito/Sepia Dopaminérgico v3.0")
+ *
+ * Incluye:
+ * - Capa 0: Papel pergamino reactivo (ReactiveParchmentBackground) con limaduras de grafito periféricas,
+ *   anillos de compás Da Vinci y ondas acústicas/magnéticas que reaccionan al motor sin sobrecargar.
+ * - Capa 1 (Manim): Pulso de torque rectificado τ(θ) = |sin(θ)|
+ * - Capa 2 (Motion Canvas): Polaridad dinámica en terminales
+ * - Capa 3 (Remotion): Tambor cilíndrico horizontal 3D coherente con el eje horizontal, colector en el eje,
+ *   catapulta magnética de líneas de campo deformables + vórtices B_I, y apertura tipo Clamshell.
  */
 export const MainVideo: React.FC = () => {
   const frame = useCurrentFrame();
@@ -63,11 +72,10 @@ export const MainVideo: React.FC = () => {
         `}
       </style>
 
-      {/* Pista de diseño sonoro dopaminérgico v2.0 */}
       <Audio src={staticFile('audio/whiteboard_motor_sfx.wav')} volume={0.92} />
 
       {/* =====================================================================
-          CAPA 0: PAPEL PERGAMINO / CUADERNO DE BOCETO SEPIA (Inspirado en image.png)
+          CAPA 0A: PAPEL PERGAMINO / CUADERNO DE BOCETO SEPIA
          ===================================================================== */}
       <AbsoluteFill
         style={{
@@ -80,6 +88,11 @@ export const MainVideo: React.FC = () => {
       />
 
       {/* =====================================================================
+          CAPA 0B: ELEMENTOS DE FONDO REACTIVOS Y SUTILES (Limaduras, Compás Da Vinci, Ondas)
+         ===================================================================== */}
+      <ReactiveParchmentBackground state={state} />
+
+      {/* =====================================================================
           MUNDO CON CÁMARA DINÁMICA (WHIP-PANS, MACRO ZOOMS, INCLINACIÓN Y SHAKE)
          ===================================================================== */}
       <AbsoluteFill
@@ -88,10 +101,7 @@ export const MainVideo: React.FC = () => {
           transformOrigin: '960px 540px',
         }}
       >
-        {/* Capa 3A: Boceto principal del motor con imanes N/S en herradura y vectores F */}
         <IsometricMotorWhiteboard state={state} />
-
-        {/* Capa 2 (Motion Canvas): Polaridad y pulsos en terminales durante Macro Zoom */}
         <MotionCanvasCircuitLayer state={state} />
       </AbsoluteFill>
 

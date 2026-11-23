@@ -14,50 +14,44 @@ interface KineticCue {
   accent: string;
 }
 
-/**
- * Guion de Tipografía Cinética Dopaminérgica (v2.0):
- * - UNA SOLA idea corta y potente en pantalla a la vez.
- * - Cero paneles estáticos, cero tablas saturadas.
- * - Títulos grandes estilo boceto a lápiz sobre el pergamino que entran con impacto y salen limpiamente.
- */
 const KINETIC_CUES: KineticCue[] = [
   {
     start: 8,
     end: 114,
     kicker: '01 · EL MOTOR EN MARCHA',
-    headline: 'ACERO SELLADO · 3,000 RPM',
+    headline: 'BLINDAJE SELLADO · EJE A 3,000 RPM',
     position: 'top',
     accent: '#362312',
   },
   {
     start: 124,
     end: 234,
-    kicker: '02 · REVELACIÓN RAYOS-X',
-    headline: 'IMANES (N / S) + NÚCLEO INTERNO',
+    kicker: '02 · APERTURA MECÁNICA Y RAYOS-X',
+    headline: 'ESTATOR (N / S) + TAMBOR HORIZONTAL Y COLECTOR',
     position: 'top',
     accent: '#5C3F24',
   },
   {
     start: 244,
     end: 368,
-    kicker: '03 · ENERGÍA INVISIBLE',
-    headline: 'LA CORRIENTE (I) CRUZA EL CAMPO (N → S)',
+    kicker: '03 · INTERACCIÓN ELECTROMAGNÉTICA',
+    headline: 'VÓRTICES DE CORRIENTE (I) CURVAN EL CAMPO (N → S)',
     position: 'bottom',
     accent: '#991B1B',
   },
   {
     start: 378,
     end: 534,
-    kicker: '04 · LEY DE LORENTZ: F = I × B',
-    headline: '¡EXPLOSIÓN DE FUERZA (F) Y PAR DE GIRO!',
-    position: 'bottom',
-    accent: '#362312',
+    kicker: '04 · CATAPULTA MAGNÉTICA (LORENTZ: F = I × B)',
+    headline: 'EL CAMPO TENSADO EMPUJA EL TAMBOR HORIZONTAL (↑F)',
+    position: 'top',
+    accent: '#065F46',
   },
   {
     start: 544,
     end: 714,
-    kicker: '05 · EL SECRETO DEL COLECTOR',
-    headline: 'INVERSIÓN CADA 180° → ¡EMPUJE CONTINUO!',
+    kicker: '05 · COLECTOR EN EL EJE HORIZONTAL',
+    headline: 'LAS DELGAS INVIERTEN I CADA 180° → ¡GIRO CONTINUO!',
     position: 'top',
     accent: '#B45309',
   },
@@ -65,7 +59,7 @@ const KINETIC_CUES: KineticCue[] = [
     start: 724,
     end: 895,
     kicker: '06 · MOTOR RECONSTRUIDO',
-    headline: 'ELECTRICIDAD CONVERTIDA EN ROTACIÓN',
+    headline: 'ELECTRICIDAD Y MAGNETISMO CONVERTIDOS EN POTENCIA',
     position: 'top',
     accent: '#362312',
   },
@@ -86,13 +80,12 @@ export const WhiteboardAnnotations: React.FC<Props> = ({state}) => {
     const enter = smoothstep(activeCue.start, activeCue.start + 12, frame);
     const exit = 1 - smoothstep(activeCue.end - 12, activeCue.end, frame);
     cueOpacity = enter * exit;
-    // Efecto pop elástico al entrar
     const over =
       frame < activeCue.start + 16
-        ? Math.sin(((frame - activeCue.start) / 16) * Math.PI) * 0.12
+        ? Math.sin(((frame - activeCue.start) / 16) * Math.PI) * 0.1
         : 0;
-    cueScale = 0.82 + 0.18 * enter + over;
-    cueYOffset = (1 - enter) * (activeCue.position === 'top' ? -28 : 28);
+    cueScale = 0.85 + 0.15 * enter + over;
+    cueYOffset = (1 - enter) * (activeCue.position === 'top' ? -24 : 24);
   }
 
   return (
@@ -105,15 +98,14 @@ export const WhiteboardAnnotations: React.FC<Props> = ({state}) => {
         color: '#362312',
       }}
     >
-      {/* TÍTULO CINÉTICO ÚNICO (1 sola idea en pantalla a la vez) */}
       {activeCue && cueOpacity > 0.01 && (
         <div
           style={{
             position: 'absolute',
             left: 0,
             right: 0,
-            top: activeCue.position === 'top' ? 36 : undefined,
-            bottom: activeCue.position === 'bottom' ? 46 : undefined,
+            top: activeCue.position === 'top' ? 20 : undefined,
+            bottom: activeCue.position === 'bottom' ? 26 : undefined,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -124,11 +116,11 @@ export const WhiteboardAnnotations: React.FC<Props> = ({state}) => {
         >
           <div
             style={{
-              backgroundColor: 'rgba(234, 219, 194, 0.92)',
-              border: `4px solid ${activeCue.accent}`,
-              borderRadius: 14,
-              padding: '10px 34px 12px',
-              boxShadow: '6px 6px 0px rgba(54, 35, 18, 0.25)',
+              backgroundColor: 'rgba(234, 219, 194, 0.94)',
+              border: `3.5px solid ${activeCue.accent}`,
+              borderRadius: 12,
+              padding: '7px 28px 9px',
+              boxShadow: '5px 5px 0px rgba(54, 35, 18, 0.24)',
               textAlign: 'center',
             }}
           >
@@ -136,20 +128,20 @@ export const WhiteboardAnnotations: React.FC<Props> = ({state}) => {
               style={{
                 fontFamily: "'Comic Neue', sans-serif",
                 fontWeight: 700,
-                fontSize: 19,
-                letterSpacing: 2.5,
+                fontSize: 17,
+                letterSpacing: 2.2,
                 color: '#6B4E31',
-                marginBottom: 2,
+                marginBottom: 1,
               }}
             >
               {activeCue.kicker}
             </div>
             <div
               style={{
-                fontSize: 44,
+                fontSize: 36,
                 lineHeight: 1.08,
                 color: activeCue.accent,
-                letterSpacing: 1,
+                letterSpacing: 0.8,
               }}
             >
               {activeCue.headline}
@@ -158,13 +150,12 @@ export const WhiteboardAnnotations: React.FC<Props> = ({state}) => {
         </div>
       )}
 
-      {/* Línea de progreso minimalista a lápiz al borde inferior */}
       <div
         style={{
           position: 'absolute',
           left: 80,
           right: 80,
-          bottom: 14,
+          bottom: 10,
           height: 5,
           backgroundColor: 'rgba(92, 63, 36, 0.22)',
           borderRadius: 4,

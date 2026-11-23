@@ -2,7 +2,6 @@ import React from 'react';
 import {
   MotorFrameState,
   clamp,
-  sketchArrow,
   sketchEllipseArc,
   sketchLine,
   sketchRoundedRect,
@@ -14,15 +13,23 @@ interface Props {
 }
 
 /**
- * Boceto Mecánico de Grafito/Sepia de Alta Energía (v2.0)
- * Inspirado directamente en la estética y arquitectura de image.png:
- * - Papel pergamino cálido con sombreado diagonal denso a lápiz (///)
- * - Imanes en herradura gigantes a izquierda (N) y derecha (S) con barras verticales de estator
- * - Ejes horizontales escalonados a izquierda y derecha girando a alta velocidad
- * - Cámara central cuadrada redondeada de doble pared con 4 postes de escobillas/terminales
- * - Lazos internos de corriente con flechas ortogonales y rotación 3D
- * - Flechas gigantes de Fuerza de Lorentz "F" de doble contorno y arcos punteados de par motor
- * - Carcasa blindada exterior en Escena 1 que se disuelve con onda de choque en Escena 2 y se reconstruye en Escena 6
+ * Boceto Mecánico de Grafito/Sepia v3.0 — 100% Coherencia Mecánica y Física
+ *
+ * Mejoras clave de v3.0:
+ * 1. COHERENCIA MECÁNICA 100% (Eje Horizontal Único y = 540):
+ *    - El tambor cilíndrico del rotor, el colector de delgas y las bobinas de cobre están montados
+ *      horizontalmente sobre el mismo eje (y = 540) que sale por los rodamientos izquierdo y derecho.
+ *    - Al girar alrededor del eje horizontal, las barras horizontales de la bobina suben por la cara frontal
+ *      del cilindro (z > 0, trazo grueso brillante) y bajan por la cara posterior (z < 0, trazo oculto punteado),
+ *      manteniendo su longitud horizontal constante y proyectando su altura con sin(θ).
+ * 2. ANIMACIÓN FÍSICA DEL CAMPO ELECTROMAGNÉTICO (Catapulta Magnética + Vórtices B_I):
+ *    - Líneas de flujo dipolar curvas desde el imán N hasta el imán S con partículas de flujo.
+ *    - Cuando fluye corriente I por las barras del rotor, nacen vórtices magnéticos concéntricos (B_I)
+ *      alrededor del cable que DEFORMAN y comprimen las líneas del campo B como ligas elásticas tensadas,
+ *      catapultando la barra frontal hacia arriba (↑F) y la trasera hacia abajo (↓-F).
+ * 3. CREATIVIDAD MECÁNICA (Apertura y Cierre tipo Clamshell con Pernos Giratorios):
+ *    - La carcasa exterior se divide en mitad superior e inferior que se desatornillan y se abren
+ *      verticalmente al revelarse el interior, y se vuelven a ensamblar y atornillar en la reconstrucción.
  */
 export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
   const {
@@ -35,42 +42,77 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
     bFieldProgress,
     currentActive,
     lorentzProgress,
-    polarity,
     commutationFlash,
   } = state;
 
-  // Paleta de grafito / sepia cálido fiel a image.png + acentos energéticos dopaminérgicos
-  const inkDark = '#362312'; // Trazo principal de carboncillo sepia oscuro
-  const inkMid = '#5C3F24'; // Trazo secundario de lápiz
-  const inkLight = '#8C6C49'; // Líneas de construcción y achurado suave
-  const inkCrimson = '#991B1B'; // Pulso de corriente intensa
-  const inkGold = '#B45309'; // Cobre / chispazo de energía
-  const inkGlow = '#D97706'; // Destello ámbar
+  const inkDark = '#362312';
+  const inkMid = '#5C3F24';
+  const inkLight = '#8C6C49';
+  const inkCrimson = '#991B1B';
+  const inkGold = '#B45309';
+  const inkGlow = '#D97706';
+  const inkBlue = '#1E3A8A';
+  const inkEmerald = '#065F46';
 
-  // Tiempos de construcción explosiva por pieza
   const drawExteriorP = smoothstep(2, 34, frame);
   const drawLeftMagnetP = smoothstep(132, 162, frame);
   const drawRightMagnetP = smoothstep(152, 182, frame);
   const drawCoreChamberP = smoothstep(172, 208, frame);
   const drawTerminalsP = smoothstep(192, 228, frame);
 
-  // Onda de choque circular en transiciones clave
+  // Apertura tipo Clamshell de la carcasa exterior en Escena 2 (frames 120..175) y cierre en Escena 6 (frames 725..785)
+  const clamshellOpen =
+    frame < 720
+      ? smoothstep(122, 172, frame)
+      : 1 - smoothstep(725, 782, frame);
+
   const xrayShockP = smoothstep(120, 152, frame);
   const lorentzShockP = smoothstep(375, 408, frame);
-  const rebuildSlam1 = smoothstep(725, 745, frame);
-  const rebuildSlam2 = smoothstep(748, 768, frame);
-  const rebuildSlam3 = smoothstep(772, 795, frame);
 
-  // Factor de rotación 3D de la espira interna dentro de la ventana cuadrada central
-  const cosT = Math.cos(thetaRad);
-  const sinT = Math.sin(thetaRad);
-
-  // Pulso dopaminérgico de las flechas de fuerza F
   const fPulse =
-    lorentzProgress * (1 + 0.14 * Math.sin(frame * 0.45) + 0.18 * commutationFlash);
+    lorentzProgress * (1 + 0.13 * Math.sin(frame * 0.45) + 0.16 * commutationFlash);
 
-  // Desplazamiento animado de líneas de velocidad del eje
-  const shaftScroll = (frame * (rpm / 3000) * 9) % 24;
+  // Desplazamiento vertical de las líneas de rotación en los ejes y el tambor horizontal (giro alrededor del eje X horizontal)
+  const shaftScroll = (frame * (rpm / 3000) * 10) % 28;
+
+  // Geometría 3D del Tambor Cilíndrico Horizontal del Rotor (montado sobre y = 540)
+  const drumX1 = 875;
+  const drumX2 = 1155;
+  const drumR = 132;
+  const commX1 = 795;
+  const commX2 = 862;
+  const commR = 64;
+
+  // Calculamos las posiciones 3D de 2 espiras ortogonales (4 barras conductoras horizontales a θ, θ+90°, θ+180°, θ+270°)
+  // Al girar alrededor del eje horizontal y = 540:
+  // y = 540 - R * sin(angle)  (sube cuando sin > 0)
+  // z = R * cos(angle)        (z > 0 está en la cara FRONTAL hacia el espectador; z < 0 está en la cara TRASERA)
+  const coilBars = [0, 90, 180, 270].map((offsetDeg, idx) => {
+    const ang = thetaRad + (offsetDeg * Math.PI) / 180;
+    const y = 540 - drumR * Math.sin(ang);
+    const z = drumR * Math.cos(ang); // > 0 frente, < 0 atrás
+    const isPrimary = idx === 0 || idx === 2;
+    // Gracias al colector de delgas, toda barra que pasa por la cara FRONTAL (z >= 0) lleva corriente de izquierda a derecha (→)
+    // y recibe Fuerza de Lorentz hacia ARRIBA (↑F), mientras toda barra en la cara TRASERA (z < 0) lleva corriente (←) y baja (↓-F).
+    const isFront = z >= 0;
+    return {
+      idx,
+      ang,
+      y,
+      z,
+      isPrimary,
+      isFront,
+    };
+  });
+
+  const backBars = coilBars.filter((b) => !b.isFront);
+  const frontBars = coilBars.filter((b) => b.isFront);
+
+  // Barra primaria actualmente en la cara frontal (para mostrar su vórtice magnético B_I y la catapulta de campo B)
+  const activeFrontBar =
+    coilBars[0].z >= coilBars[2].z ? coilBars[0] : coilBars[2];
+  const activeBackBar =
+    coilBars[0].z >= coilBars[2].z ? coilBars[2] : coilBars[0];
 
   return (
     <svg
@@ -80,7 +122,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
       style={{position: 'absolute', inset: 0, pointerEvents: 'none'}}
     >
       <defs>
-        {/* Sombreado denso a lápiz sepia (45°) para mitades oscuras de imanes N/S y paredes gruesas */}
         <pattern
           id="sepiaDenseHatch"
           width="9"
@@ -108,7 +149,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
           />
         </pattern>
 
-        {/* Sombreado medio a lápiz sepia para mitades claras, rodamientos y rotor interior */}
         <pattern
           id="sepiaLightHatch"
           width="11"
@@ -127,7 +167,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
           />
         </pattern>
 
-        {/* Achurado cruzado pesado para la carcasa blindada exterior (Escenas 1 y 6) */}
         <pattern
           id="sepiaArmorHatch"
           width="12"
@@ -157,20 +196,18 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
       </defs>
 
       {/* =====================================================================
-          0. LÍNEAS DE CONSTRUCCIÓN DE BOCETO Y LÍNEAS DE VELOCIDAD RADIALES
+          0. EJES DE CONSTRUCCIÓN Y LÍNEAS DE VELOCIDAD RADIALES
          ===================================================================== */}
-      <g opacity={0.45}>
-        {/* Eje horizontal central de construcción a lápiz */}
+      <g opacity={0.42}>
         <path
-          d={sketchLine(80, 540, 1840, 540, 1, 1.2, 0)}
+          d={sketchLine(80, 540, 1840, 540, 1, 1.1, 0)}
           stroke={inkLight}
           strokeWidth={2}
           strokeDasharray="16 10 5 10"
           fill="none"
         />
-        {/* Eje vertical central */}
         <path
-          d={sketchLine(960, 60, 960, 1020, 2, 1.2, 0)}
+          d={sketchLine(960, 60, 960, 1020, 2, 1.1, 0)}
           stroke={inkLight}
           strokeWidth={1.8}
           strokeDasharray="14 12"
@@ -178,13 +215,12 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
         />
       </g>
 
-      {/* Líneas cinéticas radiales de velocidad (Speed Lines) cuando RPM > 1800 */}
       {rpm > 1400 && (
-        <g opacity={clamp((rpm - 1400) / 1800, 0, 0.42)}>
-          {Array.from({length: 16}).map((_, i) => {
-            const ang = (i * 22.5 * Math.PI) / 180 + (frame % 7) * 0.02;
-            const r0 = 720 + ((i * 37 + frame * 19) % 110);
-            const r1 = 980;
+        <g opacity={clamp((rpm - 1400) / 1800, 0, 0.38)}>
+          {Array.from({length: 14}).map((_, i) => {
+            const ang = (i * 25.7 * Math.PI) / 180 + (frame % 7) * 0.02;
+            const r0 = 740 + ((i * 37 + frame * 19) % 100);
+            const r1 = 960;
             return (
               <line
                 key={i}
@@ -193,7 +229,7 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
                 x2={960 + Math.cos(ang) * r1}
                 y2={540 + Math.sin(ang) * r1 * 0.65}
                 stroke={i % 2 === 0 ? inkDark : inkGold}
-                strokeWidth={i % 3 === 0 ? 3.5 : 2}
+                strokeWidth={i % 3 === 0 ? 3.2 : 2}
                 strokeLinecap="round"
               />
             );
@@ -202,7 +238,7 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
       )}
 
       {/* =====================================================================
-          1. ANATOMÍA INTERNA EN ESTILO BOCETO SEPIA (Inspirada en image.png)
+          1. ANATOMÍA INTERNA: IMANES EN HERRADURA (N / S) + TAMBOR HORIZONTAL 3D
          ===================================================================== */}
       {internalsVisibility > 0.01 && (
         <g opacity={internalsVisibility}>
@@ -213,7 +249,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
             opacity={drawLeftMagnetP}
             transform={`translate(${(1 - drawLeftMagnetP) * -140}, 0)`}
           >
-            {/* Mitad superior del arco en herradura izquierdo (sombreado oscuro como image.png) */}
             <path
               d="M 584 115 L 410 115 C 235 115, 165 250, 165 540 L 295 540 C 295 315, 345 235, 435 235 L 584 235 Z"
               fill="url(#sepiaDenseHatch)"
@@ -221,7 +256,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeWidth={6.5}
               strokeLinejoin="round"
             />
-            {/* Mitad inferior del arco en herradura izquierdo (sombreado claro como image.png) */}
             <path
               d="M 165 540 C 165 830, 235 965, 410 965 L 584 965 L 584 845 L 435 845 C 345 845, 295 765, 295 540 Z"
               fill="url(#sepiaLightHatch)"
@@ -229,16 +263,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeWidth={6.5}
               strokeLinejoin="round"
             />
-            {/* Doble pasada de lápiz para textura de boceto */}
-            <path
-              d="M 584 115 L 410 115 C 235 115, 165 250, 165 540 C 165 830, 235 965, 410 965 L 584 965"
-              fill="none"
-              stroke={inkMid}
-              strokeWidth={2.5}
-              strokeDasharray="24 6"
-            />
-
-            {/* Letra "N" tallada a mano en la línea media del arco izquierdo */}
             <rect
               x={195}
               y={502}
@@ -246,7 +270,7 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               height={76}
               rx={10}
               fill="#EADBC2"
-              fillOpacity={0.85}
+              fillOpacity={0.88}
             />
             <path
               d="M 212 564 L 212 514 L 250 564 L 250 514"
@@ -256,16 +280,12 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-
-            {/* Barra vertical izquierda del estator (x: 584..626) */}
             <path
               d={sketchRoundedRect(584, 92, 42, 896, 6, 11, 1.3)}
               fill="url(#sepiaLightHatch)"
               stroke={inkDark}
               strokeWidth={6}
             />
-
-            {/* Arco punteado y flecha curva ascendente (↑) dentro de la herradura N (igual a image.png) */}
             <path
               d="M 390 450 C 375 360, 400 280, 430 245"
               fill="none"
@@ -275,7 +295,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeLinecap="round"
               strokeDashoffset={-frame * 1.8}
             />
-            {/* Flecha curva sólida inferior apuntando hacia arriba (↑) dentro de N */}
             <path
               d="M 388 765 C 365 710, 355 655, 362 600"
               fill="none"
@@ -300,7 +319,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
             opacity={drawRightMagnetP}
             transform={`translate(${(1 - drawRightMagnetP) * 140}, 0)`}
           >
-            {/* Mitad superior del arco en herradura derecho (sombreado claro como image.png) */}
             <path
               d="M 1336 115 L 1510 115 C 1685 115, 1755 250, 1755 540 L 1625 540 C 1625 315, 1575 235, 1485 235 L 1336 235 Z"
               fill="url(#sepiaLightHatch)"
@@ -308,7 +326,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeWidth={6.5}
               strokeLinejoin="round"
             />
-            {/* Mitad inferior del arco en herradura derecho (sombreado oscuro como image.png) */}
             <path
               d="M 1755 540 C 1755 830, 1685 965, 1510 965 L 1336 965 L 1336 845 L 1485 845 C 1575 845, 1625 765, 1625 540 Z"
               fill="url(#sepiaDenseHatch)"
@@ -316,8 +333,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeWidth={6.5}
               strokeLinejoin="round"
             />
-
-            {/* Letra "S" tallada a mano en la línea media del arco derecho */}
             <rect
               x={1654}
               y={502}
@@ -325,7 +340,7 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               height={76}
               rx={10}
               fill="#EADBC2"
-              fillOpacity={0.85}
+              fillOpacity={0.88}
             />
             <path
               d="M 1708 520 C 1695 508, 1670 512, 1670 526 C 1670 542, 1712 538, 1712 556 C 1712 570, 1682 572, 1668 560"
@@ -334,16 +349,12 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeWidth={7.5}
               strokeLinecap="round"
             />
-
-            {/* Barra vertical derecha del estator (x: 1294..1336) */}
             <path
               d={sketchRoundedRect(1294, 92, 42, 896, 6, 12, 1.3)}
               fill="url(#sepiaLightHatch)"
               stroke={inkDark}
               strokeWidth={6}
             />
-
-            {/* Flecha curva sólida superior apuntando hacia abajo (↓) dentro de S */}
             <path
               d="M 1525 310 C 1552 365, 1562 420, 1556 475"
               fill="none"
@@ -359,7 +370,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            {/* Arco punteado inferior dentro de la herradura S */}
             <path
               d="M 1552 630 C 1545 725, 1515 795, 1485 835"
               fill="none"
@@ -372,7 +382,7 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
           </g>
 
           {/* -----------------------------------------------------------------
-              1C. CÁMARA CENTRAL CUADRADA REDONDEADA DE DOBLE PARED + TERMINALES
+              1C. CÁMARA CENTRAL DE DOBLE PARED + CAMPO MAGNÉTICO DEFORMABLE (CATAPULTA)
              ----------------------------------------------------------------- */}
           <g
             opacity={drawCoreChamberP}
@@ -389,40 +399,370 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
             {/* Ventana interior clara del rotor (x: 724..1196, y: 304..776) */}
             <path
               d={sketchRoundedRect(724, 304, 472, 472, 38, 22, 1.5)}
-              fill="#E9D9BE"
+              fill="#EADAC0"
               stroke={inkDark}
               strokeWidth={6.5}
             />
-            {/* Achurado diagonal suave del plato del rotor */}
-            <path
-              d={sketchRoundedRect(732, 312, 456, 456, 32, 23, 1.0)}
-              fill="url(#sepiaLightHatch)"
-              stroke="none"
-            />
 
-            {/* Ondas de Flujo Magnético B (N -> S) cruzando horizontalmente la ventana en Escenas 3-6 */}
+            {/* ===============================================================
+                1D. ANIMACIÓN FÍSICA DEL CAMPO ELECTROMAGNÉTICO (B + B_I)
+                Líneas de flujo dipolar curvas N -> S que se DEFORMAN como ligas
+                elásticas ("efecto catapulta") alrededor de las barras con corriente
+               =============================================================== */}
             {bFieldProgress > 0.01 && (
-              <g opacity={bFieldProgress * 0.72}>
-                {[-140, -70, 0, 70, 140].map((dy, idx) => (
-                  <g key={idx}>
-                    <line
-                      x1={632}
-                      y1={540 + dy}
-                      x2={1288}
-                      y2={540 + dy}
-                      stroke="#1E3A8A"
-                      strokeWidth={3.2}
-                      strokeDasharray="16 14"
-                      strokeDashoffset={-frame * 3.5}
-                    />
-                  </g>
-                ))}
+              <g opacity={bFieldProgress}>
+                {[-175, -130, -85, -40, 0, 40, 85, 130, 175].map((dy, idx) => {
+                  const yBase = 540 + dy;
+                  // Deformación elástica ("Catapulta Magnética"): cuando fluye corriente I,
+                  // el vórtice magnético B_I comprime y curva las líneas de campo B debajo de la barra frontal
+                  // para empujarla hacia ARRIBA (↑F) y encima de la barra trasera para empujarla hacia ABAJO (↓-F).
+                  const distFront = yBase - activeFrontBar.y;
+                  const bendFront =
+                    currentActive *
+                    48 *
+                    Math.exp(-(distFront * distFront) / 2800) *
+                    (activeFrontBar.z / drumR);
+
+                  const cyCtrl1 = yBase + dy * 0.22 + bendFront;
+                  const cyCtrl2 = yBase - dy * 0.18 + bendFront * 0.7;
+
+                  const pathD = `M 626 ${yBase + dy * 0.35} C 770 ${cyCtrl1.toFixed(1)}, 1140 ${cyCtrl2.toFixed(1)}, 1294 ${yBase + dy * 0.35}`;
+
+                  // Posición animada de partículas/flechas de flujo magnético viajando de N a S
+                  const uFlow = ((frame * 0.025 + idx * 0.17) % 1 + 1) % 1;
+                  const fx = 640 + uFlow * 630;
+                  const fy =
+                    yBase +
+                    Math.sin(uFlow * Math.PI) * (bendFront * 0.85) +
+                    (1 - Math.sin(uFlow * Math.PI)) * dy * 0.25;
+
+                  return (
+                    <g key={idx}>
+                      {/* Línea de flujo magnético curva deformable */}
+                      <path
+                        d={pathD}
+                        fill="none"
+                        stroke={inkBlue}
+                        strokeWidth={idx % 2 === 0 ? 3.0 : 2.2}
+                        strokeOpacity={0.62}
+                        strokeDasharray="16 10"
+                        strokeDashoffset={-frame * 3.8}
+                      />
+                      {/* Punta de flecha de flujo magnético (N -> S) */}
+                      <path
+                        d={`M ${fx - 9} ${fy - 6} L ${fx + 5} ${fy} L ${fx - 9} ${fy + 6}`}
+                        fill="none"
+                        stroke={inkBlue}
+                        strokeWidth={2.8}
+                        strokeLinecap="round"
+                      />
+                    </g>
+                  );
+                })}
               </g>
             )}
 
-            {/* POSTES TERMINALES Y PORTA-ESCOBILLAS (2 ARRIBA Y 2 ABAJO, IGUAL A image.png) */}
+            {/* ===============================================================
+                1E. BARRAS TRASERAS DE LA BOBINA (z < 0, DETRÁS DEL TAMBOR HORIZONTAL)
+               =============================================================== */}
+            {backBars.map((bar) => (
+              <g key={bar.idx} opacity={0.52}>
+                <line
+                  x1={drumX1}
+                  y1={bar.y}
+                  x2={drumX2}
+                  y2={bar.y}
+                  stroke={bar.isPrimary ? inkGold : inkMid}
+                  strokeWidth={bar.isPrimary ? 6 : 4}
+                  strokeDasharray="10 8"
+                />
+                {/* Corriente regresando de derecha a izquierda (←) por detrás del tambor */}
+                {currentActive > 0.1 && bar.isPrimary && (
+                  <line
+                    x1={drumX1}
+                    y1={bar.y}
+                    x2={drumX2}
+                    y2={bar.y}
+                    stroke={inkBlue}
+                    strokeWidth={5}
+                    strokeDasharray="16 18"
+                    strokeDashoffset={frame * 6}
+                  />
+                )}
+              </g>
+            ))}
+
+            {/* ===============================================================
+                1F. TAMBOR CILÍNDRICO HORIZONTAL DEL ROTOR + EJE CENTRAL CONTINUO (y = 540)
+                (100% coherente con los ejes horizontales izquierdo y derecho)
+               =============================================================== */}
+            <g>
+              {/* Eje central de acero continuo a lo largo de y = 540 */}
+              <path
+                d={sketchRoundedRect(724, 524, 472, 32, 3, 50, 0.8)}
+                fill="url(#sepiaDenseHatch)"
+                stroke={inkDark}
+                strokeWidth={4.5}
+              />
+
+              {/* Cuerpo cilíndrico horizontal del rotor (x: 875..1155, y: 408..672) */}
+              <path
+                d={sketchRoundedRect(
+                  drumX1,
+                  540 - drumR,
+                  drumX2 - drumX1,
+                  drumR * 2,
+                  18,
+                  51,
+                  1.3,
+                )}
+                fill="rgba(233, 217, 190, 0.78)"
+                stroke={inkDark}
+                strokeWidth={5.5}
+              />
+              <path
+                d={sketchRoundedRect(
+                  drumX1,
+                  540 - drumR,
+                  drumX2 - drumX1,
+                  drumR * 2,
+                  18,
+                  52,
+                  1.0,
+                )}
+                fill="url(#sepiaLightHatch)"
+              />
+
+              {/* Ranuras horizontales de laminación del tambor que suben/bajan al girar el cilindro horizontal */}
+              {[-95, -55, -15, 25, 65, 105].map((baseY, idx) => {
+                const slotAng =
+                  thetaRad + ((idx * 30) * Math.PI) / 180;
+                const sy = 540 - (drumR - 10) * Math.sin(slotAng);
+                const sz = Math.cos(slotAng);
+                if (sz < -0.1) return null; // Solo ranuras visibles en la cara frontal del cilindro
+                return (
+                  <line
+                    key={idx}
+                    x1={drumX1 + 14}
+                    y1={sy}
+                    x2={drumX2 - 14}
+                    y2={sy}
+                    stroke={inkMid}
+                    strokeWidth={2.2}
+                    strokeOpacity={0.35 + 0.35 * sz}
+                  />
+                );
+              })}
+
+              {/* Tapas elípticas 3D izquierda y derecha del tambor cilíndrico horizontal */}
+              <ellipse
+                cx={drumX1}
+                cy={540}
+                rx={22}
+                ry={drumR}
+                fill="rgba(220, 200, 168, 0.85)"
+                stroke={inkDark}
+                strokeWidth={5}
+              />
+              <ellipse
+                cx={drumX2}
+                cy={540}
+                rx={22}
+                ry={drumR}
+                fill="rgba(220, 200, 168, 0.65)"
+                stroke={inkDark}
+                strokeWidth={5}
+              />
+
+              {/* Radios 3D girando dentro de las tapas elípticas del cilindro horizontal */}
+              {[0, 90, 180, 270].map((deg) => {
+                const rad = thetaRad + (deg * Math.PI) / 180;
+                const ex = 20 * Math.cos(rad);
+                const ey = (drumR - 4) * Math.sin(rad);
+                return (
+                  <React.Fragment key={deg}>
+                    <line
+                      x1={drumX1}
+                      y1={540}
+                      x2={drumX1 + ex}
+                      y2={540 - ey}
+                      stroke={inkDark}
+                      strokeWidth={3.5}
+                    />
+                    <line
+                      x1={drumX2}
+                      y1={540}
+                      x2={drumX2 + ex}
+                      y2={540 - ey}
+                      stroke={inkDark}
+                      strokeWidth={3.5}
+                    />
+                  </React.Fragment>
+                );
+              })}
+
+              {/* =============================================================
+                  1G. COLECTOR DE DELGAS CILÍNDRICO HORIZONTAL (x: 795..862, y: 540 ± 64)
+                  Montado sobre el mismo eje horizontal y tocado por las escobillas arriba y abajo
+                 ============================================================= */}
+              <path
+                d={sketchRoundedRect(
+                  commX1,
+                  540 - commR,
+                  commX2 - commX1,
+                  commR * 2,
+                  10,
+                  55,
+                  1.1,
+                )}
+                fill="#D97706"
+                fillOpacity={0.32}
+                stroke={inkDark}
+                strokeWidth={5}
+              />
+              {/* Líneas divisorias de las delgas de cobre girando verticalmente sobre el colector horizontal */}
+              {[0, 60, 120, 180, 240, 300].map((deg) => {
+                const rad = thetaRad + (deg * Math.PI) / 180;
+                if (Math.cos(rad) < 0) return null;
+                const cySeg = 540 - commR * Math.sin(rad);
+                return (
+                  <line
+                    key={deg}
+                    x1={commX1 + 4}
+                    y1={cySeg}
+                    x2={commX2 - 4}
+                    y2={cySeg}
+                    stroke={inkDark}
+                    strokeWidth={3.5}
+                  />
+                );
+              })}
+            </g>
+
+            {/* ===============================================================
+                1H. BARRAS FRONTALES DE LA BOBINA (z >= 0, DELANTE DEL TAMBOR HORIZONTAL)
+                + VÓRTICES MAGNÉTICOS B_I + FLECHAS DE FUERZA DE LORENTZ (↑F)
+               =============================================================== */}
+            {frontBars.map((bar) => (
+              <g key={bar.idx}>
+                {/* Conexiones laterales de la espira hacia el colector */}
+                <line
+                  x1={commX2}
+                  y1={540 - commR * Math.sin(bar.ang)}
+                  x2={drumX1}
+                  y2={bar.y}
+                  stroke={bar.isPrimary ? inkGold : inkMid}
+                  strokeWidth={bar.isPrimary ? 6.5 : 4.5}
+                />
+                {/* Barra conductora horizontal activa en la cara frontal del cilindro */}
+                <line
+                  x1={drumX1}
+                  y1={bar.y}
+                  x2={drumX2}
+                  y2={bar.y}
+                  stroke={bar.isPrimary ? inkDark : inkMid}
+                  strokeWidth={bar.isPrimary ? 11 : 6.5}
+                  strokeLinecap="round"
+                />
+                <line
+                  x1={drumX1}
+                  y1={bar.y}
+                  x2={drumX2}
+                  y2={bar.y}
+                  stroke={bar.isPrimary ? '#F59E0B' : '#B45309'}
+                  strokeWidth={bar.isPrimary ? 6 : 3.5}
+                  strokeLinecap="round"
+                />
+
+                {/* Pulsos de corriente fluyendo horizontalmente (───►) por la barra frontal */}
+                {currentActive > 0.1 && bar.isPrimary && (
+                  <>
+                    <line
+                      x1={drumX1}
+                      y1={bar.y}
+                      x2={drumX2}
+                      y2={bar.y}
+                      stroke={inkCrimson}
+                      strokeWidth={6.5}
+                      strokeDasharray="20 20"
+                      strokeDashoffset={-frame * 7}
+                      strokeLinecap="round"
+                    />
+                    {/* Flecha clara de dirección de corriente I (───►) sobre la barra frontal */}
+                    <path
+                      d={`M 995 ${bar.y - 12} L 1020 ${bar.y} L 995 ${bar.y + 12}`}
+                      fill="none"
+                      stroke={inkCrimson}
+                      strokeWidth={5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </>
+                )}
+              </g>
+            ))}
+
+            {/* VÓRTICES MAGNÉTICOS CONCÉNTRICOS (B_I) Y VECTOR DE EMPUJE VERTICAL (↑F) SOBRE EL TAMBOR */}
+            {currentActive > 0.15 && (
+              <g opacity={currentActive}>
+                {/* Vórtice magnético concéntrico B_I alrededor de la barra frontal activa */}
+                {[24, 44].map((vr, i) => (
+                  <ellipse
+                    key={i}
+                    cx={1015}
+                    cy={activeFrontBar.y}
+                    rx={vr * 1.45}
+                    ry={vr}
+                    fill="none"
+                    stroke={inkCrimson}
+                    strokeWidth={2.6}
+                    strokeDasharray="10 8"
+                    strokeDashoffset={-frame * 4.5}
+                    opacity={0.75 - i * 0.2}
+                  />
+                ))}
+                {/* Vórtice magnético alrededor de la barra trasera */}
+                <ellipse
+                  cx={1015}
+                  cy={activeBackBar.y}
+                  rx={32}
+                  ry={22}
+                  fill="none"
+                  stroke={inkBlue}
+                  strokeWidth={2.2}
+                  strokeDasharray="8 8"
+                  strokeDashoffset={frame * 4.5}
+                  opacity={0.5}
+                />
+              </g>
+            )}
+
+            {/* Vector verde esmeralda de Fuerza de Lorentz ↑F levantando la cara frontal del cilindro horizontal */}
+            {lorentzProgress > 0.05 && (
+              <g opacity={lorentzProgress}>
+                <line
+                  x1={1015}
+                  y1={activeFrontBar.y}
+                  x2={1015}
+                  y2={activeFrontBar.y - 78}
+                  stroke={inkEmerald}
+                  strokeWidth={8}
+                  strokeLinecap="round"
+                />
+                <path
+                  d={`M 995 ${activeFrontBar.y - 54} L 1015 ${activeFrontBar.y - 82} L 1035 ${activeFrontBar.y - 54}`}
+                  fill="none"
+                  stroke={inkEmerald}
+                  strokeWidth={7.5}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </g>
+            )}
+
+            {/* POSTES TERMINALES Y ESCOBILLAS QUE TOCAN EL COLECTOR Y EL TAMBOR (IGUAL A image.png) */}
             <g opacity={drawTerminalsP}>
-              {[835, 1085].map((tx, idx) => (
+              {[828, 1085].map((tx, idx) => (
                 <React.Fragment key={idx}>
                   {/* Poste superior externo */}
                   <path
@@ -431,19 +771,35 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
                     stroke={inkDark}
                     strokeWidth={5.5}
                   />
-                  {/* Porta-escobilla superior atravesando la pared del núcleo */}
+                  {/* Porta-escobilla superior */}
                   <path
                     d={sketchRoundedRect(tx - 28, 255, 56, 82, 4, 33 + idx, 1.1)}
                     fill="#E6D4B5"
                     stroke={inkDark}
                     strokeWidth={5.5}
                   />
-                  {/* Remache / contacto de carbón superior (•) */}
                   <circle
                     cx={tx}
                     cy={298}
                     r={13}
                     fill={commutationFlash > 0.3 ? inkGlow : inkDark}
+                  />
+                  {/* Escobilla de carbón que baja hasta hacer contacto físico con el colector horizontal */}
+                  <line
+                    x1={tx - 12}
+                    y1={337}
+                    x2={tx - 12}
+                    y2={idx === 0 ? 540 - commR : 540 - drumR}
+                    stroke={inkDark}
+                    strokeWidth={5}
+                  />
+                  <line
+                    x1={tx + 12}
+                    y1={337}
+                    x2={tx + 12}
+                    y2={idx === 0 ? 540 - commR : 540 - drumR}
+                    stroke={inkDark}
+                    strokeWidth={5}
                   />
 
                   {/* Poste inferior externo */}
@@ -453,24 +809,40 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
                     stroke={inkDark}
                     strokeWidth={5.5}
                   />
-                  {/* Porta-escobilla inferior atravesando la pared del núcleo */}
+                  {/* Porta-escobilla inferior */}
                   <path
                     d={sketchRoundedRect(tx - 28, 743, 56, 82, 4, 37 + idx, 1.1)}
                     fill="#E6D4B5"
                     stroke={inkDark}
                     strokeWidth={5.5}
                   />
-                  {/* Remache / contacto de carbón inferior (•) */}
                   <circle
                     cx={tx}
                     cy={782}
                     r={13}
                     fill={commutationFlash > 0.3 ? inkGlow : inkDark}
                   />
+                  {/* Escobilla inferior que sube hasta tocar la base del colector horizontal */}
+                  <line
+                    x1={tx - 12}
+                    y1={743}
+                    x2={tx - 12}
+                    y2={idx === 0 ? 540 + commR : 540 + drumR}
+                    stroke={inkDark}
+                    strokeWidth={5}
+                  />
+                  <line
+                    x1={tx + 12}
+                    y1={743}
+                    x2={tx + 12}
+                    y2={idx === 0 ? 540 + commR : 540 + drumR}
+                    stroke={inkDark}
+                    strokeWidth={5}
+                  />
                 </React.Fragment>
               ))}
 
-              {/* Flecha curva superior-izquierda entrando al terminal (como en image.png) */}
+              {/* Flecha curva superior-izquierda entrando al terminal del colector */}
               <path
                 d="M 632 145 C 705 152, 748 195, 775 245"
                 fill="none"
@@ -487,7 +859,7 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
                 strokeLinejoin="round"
               />
 
-              {/* Flecha curva inferior-derecha entrando al terminal (como en image.png) */}
+              {/* Flecha curva inferior-derecha saliendo del terminal inferior */}
               <path
                 d="M 1288 935 C 1215 928, 1172 885, 1145 835"
                 fill="none"
@@ -504,244 +876,84 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
                 strokeLinejoin="round"
               />
             </g>
-
-            {/* ---------------------------------------------------------------
-                1D. CONDUCTORES INTERNOS, LAZO DE CORRIENTE Y ROTACIÓN 3D
-               --------------------------------------------------------------- */}
-            <g>
-              {/* Barras conductoras verticales que bajan y suben de las escobillas */}
-              {[835, 1085].map((tx, i) => (
-                <React.Fragment key={i}>
-                  {/* Barras superiores paralelas */}
-                  <path
-                    d={sketchLine(tx - 16, 337, tx - 16, 495, 41 + i, 1.0, 0)}
-                    stroke={inkDark}
-                    strokeWidth={5}
-                    fill="none"
-                  />
-                  <path
-                    d={sketchLine(tx + 16, 337, tx + 16, 475, 43 + i, 1.0, 0)}
-                    stroke={inkDark}
-                    strokeWidth={5}
-                    fill="none"
-                  />
-                  {/* Barras inferiores paralelas */}
-                  <path
-                    d={sketchLine(tx - 16, 585, tx - 16, 743, 45 + i, 1.0, 0)}
-                    stroke={inkDark}
-                    strokeWidth={5}
-                    fill="none"
-                  />
-                  <path
-                    d={sketchLine(tx + 16, 605, tx + 16, 743, 47 + i, 1.0, 0)}
-                    stroke={inkDark}
-                    strokeWidth={5}
-                    fill="none"
-                  />
-                </React.Fragment>
-              ))}
-
-              {/* Flechas ortogonales centrales (← a la izquierda y → a la derecha, idénticas a image.png) */}
-              {(() => {
-                const arrowColor =
-                  currentActive > 0.2
-                    ? polarity > 0
-                      ? inkCrimson
-                      : inkGold
-                    : inkDark;
-                // Escalado dinámico con la rotación para sensación 3D viva
-                const span = 75 + 25 * Math.abs(cosT);
-                return (
-                  <g>
-                    {/* Flecha ortogonal izquierda (baja del centro y apunta a la izquierda ←) */}
-                    <path
-                      d={`M 851 505 L 851 540 L ${851 - span} 540`}
-                      fill="none"
-                      stroke={arrowColor}
-                      strokeWidth={6.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d={`M ${851 - span + 26} 518 L ${851 - span - 2} 540 L ${851 - span + 26} 562`}
-                      fill="none"
-                      stroke={arrowColor}
-                      strokeWidth={6.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-
-                    {/* Flecha ortogonal derecha (sube del centro y apunta a la derecha →) */}
-                    <path
-                      d={`M 1069 575 L 1069 540 L ${1069 + span} 540`}
-                      fill="none"
-                      stroke={arrowColor}
-                      strokeWidth={6.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d={`M ${1069 + span - 26} 518 L ${1069 + span + 2} 540 L ${1069 + span - 26} 562`}
-                      fill="none"
-                      stroke={arrowColor}
-                      strokeWidth={6.5}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </g>
-                );
-              })()}
-
-              {/* Espira rotatoria 3D proyectada dentro de la cámara central */}
-              {(() => {
-                const halfW = 165 * cosT;
-                const tiltY = 28 * sinT;
-                const xL = 960 - halfW;
-                const xR = 960 + halfW;
-                const yTopL = 355 + tiltY;
-                const yTopR = 355 - tiltY;
-                const yBotR = 725 - tiltY;
-                const yBotL = 725 + tiltY;
-
-                return (
-                  <g>
-                    <path
-                      d={`M ${xL.toFixed(1)} ${yTopL.toFixed(1)} L ${xR.toFixed(1)} ${yTopR.toFixed(1)} L ${xR.toFixed(1)} ${yBotR.toFixed(1)} L ${xL.toFixed(1)} ${yBotL.toFixed(1)} Z`}
-                      fill="none"
-                      stroke={currentActive > 0.1 ? inkGold : inkMid}
-                      strokeWidth={5.5}
-                      strokeLinejoin="round"
-                    />
-                    {/* Pulsos luminosos de corriente corriendo por la espira */}
-                    {currentActive > 0.1 && (
-                      <path
-                        d={`M ${xL.toFixed(1)} ${yTopL.toFixed(1)} L ${xR.toFixed(1)} ${yTopR.toFixed(1)} L ${xR.toFixed(1)} ${yBotR.toFixed(1)} L ${xL.toFixed(1)} ${yBotL.toFixed(1)} Z`}
-                        fill="none"
-                        stroke={inkCrimson}
-                        strokeWidth={6.5}
-                        strokeDasharray="24 28"
-                        strokeDashoffset={-frame * 7 * polarity}
-                        strokeLinecap="round"
-                      />
-                    )}
-                  </g>
-                );
-              })()}
-
-              {/* Lazo rectangular interno de flechas finas a lápiz (como en image.png) */}
-              <g opacity={0.78}>
-                <path
-                  d={sketchLine(1125, 675, 1125, 395, 61, 1.2, 0)}
-                  stroke={inkMid}
-                  strokeWidth={3.5}
-                  fill="none"
-                />
-                <path
-                  d="M 1111 418 L 1125 390 L 1139 418"
-                  stroke={inkMid}
-                  strokeWidth={3.5}
-                  fill="none"
-                />
-                <path
-                  d={sketchLine(1110, 372, 800, 372, 62, 1.2, 0)}
-                  stroke={inkMid}
-                  strokeWidth={3.5}
-                  fill="none"
-                />
-                <path
-                  d={sketchLine(1110, 705, 805, 705, 63, 1.2, 0)}
-                  stroke={inkMid}
-                  strokeWidth={3.5}
-                  fill="none"
-                />
-                <path
-                  d="M 828 691 L 800 705 L 828 719"
-                  stroke={inkMid}
-                  strokeWidth={3.5}
-                  fill="none"
-                />
-              </g>
-            </g>
           </g>
 
           {/* -----------------------------------------------------------------
-              1E. FLECHAS GIGANTES DE FUERZA DE LORENTZ "F" (DOBLE CONTORNO, image.png)
+              1I. FLECHAS GIGANTES DE FUERZA DE LORENTZ "F" (DOBLE CONTORNO, SIN SOLAPAR TÍTULOS)
              ----------------------------------------------------------------- */}
           {lorentzProgress > 0.01 && (
             <g opacity={lorentzProgress}>
-              {/* Flecha F Superior-Derecha (sale del poste derecho hacia arriba y dobla a la derecha ↱) */}
+              {/* Flecha F Superior-Derecha (compactada a y=96 para nunca chocar con carteles superiores) */}
               <g
                 transform={`translate(1085, 155) scale(${fPulse.toFixed(3)}) translate(-1085, -155)`}
               >
                 <path
-                  d="M 1085 150 L 1085 68 L 1225 68"
+                  d="M 1085 152 L 1085 92 L 1225 92"
                   fill="none"
                   stroke={inkDark}
-                  strokeWidth={14}
+                  strokeWidth={13}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
                 <path
-                  d="M 1085 150 L 1085 68 L 1225 68"
+                  d="M 1085 152 L 1085 92 L 1225 92"
                   fill="none"
                   stroke="#E8D8BE"
-                  strokeWidth={5}
+                  strokeWidth={4.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
                 <path
-                  d="M 1192 42 L 1234 68 L 1192 94"
+                  d="M 1194 68 L 1234 92 L 1194 116"
                   fill="none"
                   stroke={inkDark}
-                  strokeWidth={11}
+                  strokeWidth={10.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                {/* Letra "F" gruesa dibujada a mano debajo de la flecha superior */}
                 <path
-                  d="M 1132 142 L 1132 94 L 1168 94 M 1132 118 L 1160 118"
+                  d="M 1132 152 L 1132 110 L 1166 110 M 1132 131 L 1158 131"
                   fill="none"
                   stroke={inkDark}
-                  strokeWidth={8.5}
+                  strokeWidth={8}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
               </g>
 
-              {/* Flecha F Inferior-Izquierda (sale del poste izquierdo hacia abajo y dobla a la izquierda ↲) */}
+              {/* Flecha F Inferior-Izquierda (compactada a y=988 para nunca chocar con carteles inferiores) */}
               <g
-                transform={`translate(835, 925) scale(${fPulse.toFixed(3)}) translate(-835, -925)`}
+                transform={`translate(828, 925) scale(${fPulse.toFixed(3)}) translate(-828, -925)`}
               >
                 <path
-                  d="M 835 930 L 835 1012 L 695 1012"
+                  d="M 828 928 L 828 988 L 688 988"
                   fill="none"
                   stroke={inkDark}
-                  strokeWidth={14}
+                  strokeWidth={13}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
                 <path
-                  d="M 835 930 L 835 1012 L 695 1012"
+                  d="M 828 928 L 828 988 L 688 988"
                   fill="none"
                   stroke="#E8D8BE"
-                  strokeWidth={5}
+                  strokeWidth={4.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
                 <path
-                  d="M 728 986 L 686 1012 L 728 1038"
+                  d="M 719 964 L 679 988 L 719 1012"
                   fill="none"
                   stroke={inkDark}
-                  strokeWidth={11}
+                  strokeWidth={10.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                {/* Letra "F" gruesa dibujada a mano encima de la flecha inferior */}
                 <path
-                  d="M 762 986 L 762 938 L 798 938 M 762 962 L 790 962"
+                  d="M 755 974 L 755 932 L 789 932 M 755 953 L 781 953"
                   fill="none"
                   stroke={inkDark}
-                  strokeWidth={8.5}
+                  strokeWidth={8}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -752,42 +964,36 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
       )}
 
       {/* =====================================================================
-          2. EJES HORIZONTALES ESCALONADOS Y RODAMIENTOS (SIEMPRE VISIBLES, GIRANDO)
-          (Exactamente como los bloques escalonados izquierdo y derecho de image.png)
+          2. EJES HORIZONTALES ESCALONADOS Y RODAMIENTOS (GIRAN EN EL MISMO EJE y = 540)
          ===================================================================== */}
       <g opacity={drawExteriorP}>
-        {/* --- Conjunto de Rodamiento y Eje Izquierdo --- */}
-        {/* Bloque escalonado 1 (grande, entre núcleo y barra vertical) */}
+        {/* Rodamiento y Eje Izquierdo */}
         <path
           d={sketchRoundedRect(606, 444, 76, 192, 5, 71, 1.3)}
           fill="url(#sepiaLightHatch)"
           stroke={inkDark}
           strokeWidth={6}
         />
-        {/* Bloque escalonado 2 (mediano, a la izquierda de la barra) */}
         <path
           d={sketchRoundedRect(546, 488, 40, 104, 4, 72, 1.1)}
           fill="url(#sepiaDenseHatch)"
           stroke={inkDark}
           strokeWidth={6}
         />
-        {/* Bloque escalonado 3 (collarín) */}
         <path
           d={sketchRoundedRect(518, 504, 28, 72, 3, 73, 1.0)}
           fill="url(#sepiaDenseHatch)"
           stroke={inkDark}
           strokeWidth={5.5}
         />
-        {/* Eje cilíndrico izquierdo saliente */}
         <path
           d={sketchRoundedRect(385, 520, 133, 40, 4, 74, 1.0)}
           fill="url(#sepiaLightHatch)"
           stroke={inkDark}
           strokeWidth={6}
         />
-        {/* Líneas de giro sobre el eje izquierdo */}
         {[-10, 2, 14].map((yo, idx) => {
-          const yPos = 524 + ((yo + shaftScroll + 36) % 32);
+          const yPos = 556 - ((yo + shaftScroll + 36) % 32);
           return (
             <line
               key={idx}
@@ -796,44 +1002,39 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               x2={512}
               y2={yPos}
               stroke={inkDark}
-              strokeWidth={2.2}
-              strokeOpacity={0.65}
+              strokeWidth={2.4}
+              strokeOpacity={0.68}
             />
           );
         })}
 
-        {/* --- Conjunto de Rodamiento y Eje Derecho --- */}
-        {/* Bloque escalonado 1 (grande, entre núcleo y barra vertical) */}
+        {/* Rodamiento y Eje Derecho */}
         <path
           d={sketchRoundedRect(1238, 444, 76, 192, 5, 75, 1.3)}
           fill="url(#sepiaLightHatch)"
           stroke={inkDark}
           strokeWidth={6}
         />
-        {/* Bloque escalonado 2 (mediano) */}
         <path
           d={sketchRoundedRect(1334, 488, 40, 104, 4, 76, 1.1)}
           fill="url(#sepiaDenseHatch)"
           stroke={inkDark}
           strokeWidth={6}
         />
-        {/* Bloque escalonado 3 (collarín) */}
         <path
           d={sketchRoundedRect(1374, 504, 28, 72, 3, 77, 1.0)}
           fill="url(#sepiaDenseHatch)"
           stroke={inkDark}
           strokeWidth={5.5}
         />
-        {/* Eje cilíndrico derecho saliente */}
         <path
           d={sketchRoundedRect(1402, 520, 133, 40, 4, 78, 1.0)}
           fill="url(#sepiaLightHatch)"
           stroke={inkDark}
           strokeWidth={6}
         />
-        {/* Líneas de giro sobre el eje derecho */}
         {[-10, 2, 14].map((yo, idx) => {
-          const yPos = 524 + ((yo + shaftScroll + 36) % 32);
+          const yPos = 556 - ((yo + shaftScroll + 36) % 32);
           return (
             <line
               key={idx}
@@ -842,13 +1043,12 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
               x2={1528}
               y2={yPos}
               stroke={inkDark}
-              strokeWidth={2.2}
-              strokeOpacity={0.65}
+              strokeWidth={2.4}
+              strokeOpacity={0.68}
             />
           );
         })}
 
-        {/* Arcos cinéticos de rotación rápida alrededor de las puntas de ambos ejes */}
         {rpm > 120 && (
           <g opacity={clamp(rpm / 1400, 0.3, 0.95)}>
             <path
@@ -879,44 +1079,38 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
       </g>
 
       {/* =====================================================================
-          3. CARCASA BLINDADA EXTERIOR (Sólida en Escena 1 -> Fantasma en 2-5 -> Reconstruida en 6)
+          3. CARCASA BLINDADA EXTERIOR CON DESPIECE CREATIVO TIPO CLAMSHELL
+          (En Escena 2 los pernos giran y las mitades superior e inferior se abren verticalmente;
+           en Escena 6 se cierran de golpe y se re-atornillan)
          ===================================================================== */}
       {casingOpacity > 0.05 && (
         <g opacity={casingOpacity}>
-          {/* Cuerpo blindado exterior con aletas horizontales de acero sepia */}
-          <path
-            d={sketchRoundedRect(580, 195, 760, 690, 48, 91, 2.0)}
-            fill={
-              casingOpacity > 0.45
-                ? frame >= 720
-                  ? 'rgba(234, 219, 194, 0.62)'
-                  : '#E3D1B0'
-                : 'none'
-            }
-            stroke={inkDark}
-            strokeWidth={casingOpacity > 0.4 ? 7.5 : 3}
-            strokeDasharray={casingOpacity < 0.35 ? '18 14' : undefined}
-          />
-          <path
-            d={sketchRoundedRect(580, 195, 760, 690, 48, 92, 1.4)}
-            fill="url(#sepiaArmorHatch)"
-            opacity={
-              frame >= 720
-                ? Math.min(0.45, casingOpacity * 0.45)
-                : Math.max(0, (casingOpacity - 0.2) * 0.9)
-            }
-          />
-
-          {/* Aletas de enfriamiento horizontales y pernos remachados de la carcasa */}
-          {casingOpacity > 0.25 && (
-            <g
+          {/* Mitad Superior de la Carcasa Blindada (se desliza hacia arriba al abrirse) */}
+          <g transform={`translate(0, ${(-clamshellOpen * 165).toFixed(1)})`}>
+            <path
+              d={sketchRoundedRect(580, 195, 760, 345, 36, 91, 1.8)}
+              fill={
+                casingOpacity > 0.45
+                  ? frame >= 720
+                    ? 'rgba(234, 219, 194, 0.55)'
+                    : '#E3D1B0'
+                  : 'none'
+              }
+              stroke={inkDark}
+              strokeWidth={casingOpacity > 0.4 ? 7 : 3}
+              strokeDasharray={casingOpacity < 0.35 ? '18 14' : undefined}
+            />
+            <path
+              d={sketchRoundedRect(580, 195, 760, 345, 36, 92, 1.2)}
+              fill="url(#sepiaArmorHatch)"
               opacity={
                 frame >= 720
-                  ? (rebuildSlam1 + rebuildSlam2 + rebuildSlam3) / 3
-                  : drawExteriorP
+                  ? Math.min(0.42, casingOpacity * 0.42)
+                  : Math.max(0, (casingOpacity - 0.2) * 0.88)
               }
-            >
-              {[-250, -180, -110, 110, 180, 250].map((dy, idx) => (
+            />
+            {casingOpacity > 0.25 &&
+              [-250, -180, -110].map((dy, idx) => (
                 <path
                   key={idx}
                   d={sketchLine(615, 540 + dy, 1305, 540 + dy, 95 + idx, 1.3, 3)}
@@ -925,43 +1119,103 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
                   fill="none"
                 />
               ))}
-              {/* Ventana central de inspección con remaches */}
-              <path
-                d={sketchRoundedRect(710, 465, 500, 150, 18, 99, 1.2)}
-                fill={
-                  frame >= 720
-                    ? 'rgba(234, 219, 194, 0.15)'
-                    : 'rgba(54, 35, 18, 0.12)'
-                }
-                stroke={inkDark}
-                strokeWidth={5}
-              />
-              {/* 4 Pernos esquineros */}
-              {[
-                [625, 240],
-                [1295, 240],
-                [625, 840],
-                [1295, 840],
-              ].map(([bx, by], i) => (
+            {/* Pernos superiores giratorios */}
+            {[
+              [625, 240],
+              [1295, 240],
+            ].map(([bx, by], i) => (
+              <g
+                key={i}
+                transform={`translate(${bx}, ${by - clamshellOpen * 35}) rotate(${(clamshellOpen * 540).toFixed(0)})`}
+              >
                 <circle
-                  key={i}
-                  cx={bx}
-                  cy={by}
-                  r={14}
+                  cx={0}
+                  cy={0}
+                  r={15}
                   fill="#5C3F24"
                   stroke={inkDark}
                   strokeWidth={4}
                 />
+                <line
+                  x1={-9}
+                  y1={0}
+                  x2={9}
+                  y2={0}
+                  stroke="#EADAC0"
+                  strokeWidth={3}
+                />
+              </g>
+            ))}
+          </g>
+
+          {/* Mitad Inferior de la Carcasa Blindada (se desliza hacia abajo al abrirse) */}
+          <g transform={`translate(0, ${(clamshellOpen * 165).toFixed(1)})`}>
+            <path
+              d={sketchRoundedRect(580, 540, 760, 345, 36, 93, 1.8)}
+              fill={
+                casingOpacity > 0.45
+                  ? frame >= 720
+                    ? 'rgba(234, 219, 194, 0.55)'
+                    : '#E3D1B0'
+                  : 'none'
+              }
+              stroke={inkDark}
+              strokeWidth={casingOpacity > 0.4 ? 7 : 3}
+              strokeDasharray={casingOpacity < 0.35 ? '18 14' : undefined}
+            />
+            <path
+              d={sketchRoundedRect(580, 540, 760, 345, 36, 94, 1.2)}
+              fill="url(#sepiaArmorHatch)"
+              opacity={
+                frame >= 720
+                  ? Math.min(0.42, casingOpacity * 0.42)
+                  : Math.max(0, (casingOpacity - 0.2) * 0.88)
+              }
+            />
+            {casingOpacity > 0.25 &&
+              [110, 180, 250].map((dy, idx) => (
+                <path
+                  key={idx}
+                  d={sketchLine(615, 540 + dy, 1305, 540 + dy, 98 + idx, 1.3, 3)}
+                  stroke={inkDark}
+                  strokeWidth={4.5}
+                  fill="none"
+                />
               ))}
-            </g>
-          )}
+            {/* Pernos inferiores giratorios */}
+            {[
+              [625, 840],
+              [1295, 840],
+            ].map(([bx, by], i) => (
+              <g
+                key={i}
+                transform={`translate(${bx}, ${by + clamshellOpen * 35}) rotate(${(-clamshellOpen * 540).toFixed(0)})`}
+              >
+                <circle
+                  cx={0}
+                  cy={0}
+                  r={15}
+                  fill="#5C3F24"
+                  stroke={inkDark}
+                  strokeWidth={4}
+                />
+                <line
+                  x1={-9}
+                  y1={0}
+                  x2={9}
+                  y2={0}
+                  stroke="#EADAC0"
+                  strokeWidth={3}
+                />
+              </g>
+            ))}
+          </g>
         </g>
       )}
 
       {/* =====================================================================
-          4. EFECTOS DOPAMINÉRGICOS: ONDAS DE CHOQUE Y CHISPAZOS DE CARBONCILLO
+          4. ONDAS DE CHOQUE Y CHISPAZOS DE CONMUTACIÓN CADA 180°
          ===================================================================== */}
-      {/* Onda de choque circular cuando se disuelve la carcasa (Escena 2) */}
       {xrayShockP > 0.01 && xrayShockP < 0.99 && (
         <circle
           cx={960}
@@ -975,7 +1229,6 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
         />
       )}
 
-      {/* Onda de choque dorada cuando estallan las Fuerzas de Lorentz F (Escena 4) */}
       {lorentzShockP > 0.01 && lorentzShockP < 0.99 && (
         <>
           <circle
@@ -988,7 +1241,7 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
             opacity={1 - lorentzShockP}
           />
           <circle
-            cx={835}
+            cx={828}
             cy={925}
             r={30 + lorentzShockP * 340}
             fill="none"
@@ -999,13 +1252,12 @@ export const IsometricMotorWhiteboard: React.FC<Props> = ({state}) => {
         </>
       )}
 
-      {/* Explosión de chispas dibujadas a mano en los 4 contactos cada 180° */}
       {commutationFlash > 0.25 && (
         <g opacity={commutationFlash}>
           {[
-            [835, 298],
+            [828, 298],
             [1085, 298],
-            [835, 782],
+            [828, 782],
             [1085, 782],
           ].map(([sx, sy], idx) => (
             <g key={idx} transform={`translate(${sx}, ${sy})`}>
