@@ -10,6 +10,8 @@
     "install:all": "npm run install:remotion && npm run install:motion-canvas",
     "dev:remotion": "npm --prefix layers/remotion run dev",
     "dev:motion-canvas": "npm --prefix layers/motion-canvas run serve",
-    "render:remotion": "npm --prefix layers/remotion run render"
+    "build:layers": "python3 layers/manim/generate_whiteboard_layer.py && python3 layers/motion-canvas/render_circuit_layer.py",
+    "render:remotion": "npm --prefix layers/remotion run render",
+    "render:all": "npm run build:layers && npm run render:remotion"
   }
 }
