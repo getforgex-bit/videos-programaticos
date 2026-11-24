@@ -11,10 +11,7 @@ import {
 } from 'remotion';
 import {drawFilm} from './motor/film';
 
-const fonts = [
-  ['Kalam', 'fonts/kalam/Kalam-Regular.ttf'],
-  ['MotorDisplay', 'fonts/dm-serif-display/DMSerifDisplay-Regular.ttf'],
-];
+const fonts = [['Kalam', 'fonts/kalam/Kalam-Regular.ttf']];
 
 export const MainVideo: React.FC = () => {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -46,9 +43,9 @@ export const MainVideo: React.FC = () => {
     continueRender(handle);
   }, [frame, ready, fps, height, width, handle]);
   return (
-    <AbsoluteFill style={{backgroundColor: '#f7f3e8'}}>
+    <AbsoluteFill style={{backgroundColor: '#edddb9'}}>
       <canvas ref={canvas} width={width} height={height} />
-      <Audio src={staticFile('layers/motor-a02.wav')} />
+      <Audio src={staticFile('layers/motor-a02-r02.wav')} />
     </AbsoluteFill>
   );
 };

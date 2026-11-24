@@ -1,4 +1,4 @@
-import {Pen, Point, color as c, tau, face, line, dot, layer, hand, textAt, ramp, arc} from './ink';
+import {Pen, Point, color as c, tau, face, line, dot, layer, ramp, arc} from './ink';
 
 type Space = [number, number, number];
 const proj = (x: number, y: number, z: number): Point => [
@@ -54,7 +54,7 @@ function feet(p: Pen) {
 }
 function housing(p: Pen) {
   tube(p, -125, -111, 83, c.shade, c.light);
-  tube(p, -112, 75, 86, '#e3e6d9', c.light);
+  tube(p, -112, 75, 86, '#e2ceaa', c.light);
   // Longitudinal fins cast short, pen-hatched shadows onto the barrel.
   for (let j = 0; j < 11; j++) {
     const a = crown + 0.1 + j * 0.281;
@@ -66,14 +66,14 @@ function housing(p: Pen) {
       polar(68, 85, a + 0.046),
       polar(-100, 85, a + 0.046),
     ];
-    face(p, fin, j > 6 ? c.shade : '#eef0e4', c.ink, 1.08);
+    face(p, fin, j > 6 ? c.shade : '#ead8b5', c.ink, 1.08);
     line(p, [polar(-94, 89.7, a), polar(59, 89.7, a)], c.muted, 0.58);
   }
   for (let j = 0; j < 6; j++) {
     const a = 2.6 + j * 0.22;
     for (let k = 0; k < 19; k++) {
       const x = -93 + k * 8;
-      line(p, [polar(x, 86.5, a), polar(x + 4, 86.5, a + 0.048)], '#96a49c', 0.58);
+      line(p, [polar(x, 86.5, a), polar(x + 4, 86.5, a + 0.048)], '#a4835c', 0.58);
     }
   }
   for (let k = 0; k < 21; k++) {
@@ -85,7 +85,7 @@ function cap(p: Pen, offset: number) {
   const x = 91 + offset;
   tube(p, x - 20, x - 12, 90, c.shade, c.light);
   tube(p, x - 11, x - 4, 84, c.light, c.light);
-  tube(p, x - 4, x, 76, c.shade, '#e8ebdf');
+  tube(p, x - 4, x, 76, c.shade, '#e8d5b0');
   line(p, rim(x, 72), c.muted, 0.78);
   for (const a of [0.38, 1.89, 3.52, 5.07]) {
     bolt(p, x + 1, 65 * Math.cos(a), 65 * Math.sin(a), 5);
@@ -128,7 +128,7 @@ function magnet(p: Pen, y: number) {
   const back = -63,
     front = 43;
   const section = (x: number) => [...rim(x, 74, a0, a0 + 1.3, 26), ...rim(x, 61, a0 + 1.3, a0, 26)];
-  face(p, [...rim(back, 74, a0, a0 + 1.3), ...rim(front, 74, a0 + 1.3, a0)], '#c3d4cb');
+  face(p, [...rim(back, 74, a0, a0 + 1.3), ...rim(front, 74, a0 + 1.3, a0)], '#ceb792');
   face(
     p,
     [
@@ -137,7 +137,7 @@ function magnet(p: Pen, y: number) {
       polar(front, 61, a0 + 1.3),
       polar(back, 61, a0 + 1.3),
     ],
-    '#dce5d8',
+    '#e2cba6',
   );
   face(p, section(front), c.paleTeal);
   for (let j = 0; j < 12; j++) {
@@ -153,8 +153,8 @@ function coil(p: Pen, phase: number, flow: number, t: number) {
   };
   const back = former(-55),
     front = former(56);
-  face(p, [back[0], back[1], front[1], front[0]], '#d5d5c8', c.muted, 0.8);
-  face(p, [back[2], back[3], front[3], front[2]], '#e0dfce', c.muted, 0.8);
+  face(p, [back[0], back[1], front[1], front[0]], '#cfb893', c.muted, 0.8);
+  face(p, [back[2], back[3], front[3], front[2]], '#ddc9a3', c.muted, 0.8);
   face(p, front, c.light, c.muted, 1.0);
   const wire: Point[] = [polar(-103, 17, phase), polar(-87, 22, phase), polar(-76, 38, phase)];
   for (let i = 0; i < 4; i++) {
@@ -188,8 +188,8 @@ function coil(p: Pen, phase: number, flow: number, t: number) {
           const f = d / lengths[i];
           const x = wire[i][0] + f * (wire[i + 1][0] - wire[i][0]),
             y = wire[i][1] + f * (wire[i + 1][1] - wire[i][1]);
-          dot(p, x, y, 2.6, c.copper);
-          dot(p, x, y, 1.55, '#ffdda6');
+          dot(p, x, y, 3.5, c.copper);
+          dot(p, x, y, 2.15, '#ffe7ae');
           break;
         }
         d -= lengths[i];
@@ -201,8 +201,8 @@ function inside(p: Pen, phase: number, flow: number, t: number) {
   tube(p, -150, 98, 9, c.shade, c.light);
   magnet(p, 1);
   coil(p, phase, flow, t);
-  magnet(p, -1);
-  tube(p, -129, -96, 17, c.paleCopper, '#d9a078', 1);
+  layer(p, 1 - 0.78 * flow, () => magnet(p, -1));
+  tube(p, -129, -96, 17, c.paleCopper, '#d5a479', 1);
   for (const a of [phase + Math.PI / 2, phase - Math.PI / 2]) {
     line(p, [polar(-129, 17.4, a), polar(-96, 17.4, a)], c.ink, 1.7);
   }
@@ -218,25 +218,24 @@ function guideShell(p: Pen) {
   p.restore();
 }
 
-// Expose screen-space targets for pinning the handwritten leaders to real parts.
+// Camera targets and the ends of the battery leads share the projection of the motor.
 export const target = {
-  coil: (phase: number) => polar(64.8, 48.1, phase),
   brush: proj(-120, -31, 1),
-  magnet: proj(28, -74, 0),
   shaft: proj(160, 0, 0),
+  returnBrush: proj(-120, 25, 1),
 };
 
-export function machine(p: Pen, t: number, phase: number, open: number, rebuild: number) {
-  layer(p, 0.45, () => {
+export function machine(p: Pen, t: number, phase: number, open: number, rebuild: number, flow = 0) {
+  layer(p, 0.45 * (1 - flow), () => {
     for (let j = 0; j < 17; j++) {
       const x = -136 + j * 14;
       line(p, [proj(x, -87, -117), proj(x + 8, 48, -117)], c.guide, 0.65);
     }
   });
-  feet(p);
+  layer(p, 1 - flow * 0.91, () => feet(p));
   if (open > 0.001) {
-    layer(p, open, () => guideShell(p));
-    layer(p, Math.min(1, open * 1.8), () => inside(p, phase, ramp(t, 12.4, 14), t));
+    layer(p, open * (1 - flow * 0.87), () => guideShell(p));
+    layer(p, Math.min(1, open * 1.8), () => inside(p, phase, flow, t));
   }
   // All full-opacity parts are reconstructed in assembly order on the same axis.
   const solid = 1 - open;
@@ -248,20 +247,4 @@ export function machine(p: Pen, t: number, phase: number, open: number, rebuild:
     terminal(p, rebuild ? 32 * (1 - ramp(rebuild, 0.48, 1)) : 0),
   );
   shaft(p, phase, open > 0.5 ? 1 : 0);
-}
-
-export function leader(
-  p: Pen,
-  start: Point,
-  elbow: Point,
-  end: Point,
-  words: string,
-  progress: number,
-  align: CanvasTextAlign = 'left',
-) {
-  if (progress <= 0) return;
-  const join: Point = [start[0] + (elbow[0] - start[0]) * 0.62, start[1] + (elbow[1] - start[1]) * 0.42];
-  line(p, [start, join, elbow, end], c.muted, 1.35, progress);
-  dot(p, start[0], start[1], 2.5, c.copper);
-  layer(p, ramp(progress, 0.5, 1), () => textAt(p, words, end[0], end[1] - 8, hand(23), c.ink, align));
 }
