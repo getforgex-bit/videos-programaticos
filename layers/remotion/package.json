@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "python3 ../../scripts/motor-sound.py",
     "dev": "remotion studio",
-    "render": "remotion render src/index.ts MainVideo ../../output/final.mp4",
-    "typecheck": "tsc --noEmit"
+    "render": "remotion render src/index.ts MainVideo ../../output/el-motor-invisible-a02-r01.mp4",
+    "typecheck": "tsc --noEmit",
+    "prerender": "python3 ../../scripts/motor-sound.py"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.220",
