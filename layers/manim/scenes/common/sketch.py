@@ -29,6 +29,30 @@ GREEN = "#23905E"    # fuerza
 ORANGE = "#E07A1F"   # énfasis / giro
 PENCIL = "#8C929B"   # líneas fantasma / construcción
 HILITE = "#FFD84A"   # resaltador
+FILL = "#E4DED2"     # relleno claro (papel tostado en temas cálidos)
+FILL_DARK = "#C9BFAE"  # relleno oscuro / sombra plana
+SHADE = "#6E6A64"    # rayado de sombra
+
+
+# --------------------------------------------------------------------------
+# Tema global (v1 = pizarra por defecto; otros videos pueden cambiarlo)
+# --------------------------------------------------------------------------
+STYLE = {
+    "color_map": {},     # color original → color del tema (mayúsculas)
+    "double": 0.0,       # 0 = sin doble trazo; >0 = intensidad del 2º trazo
+    "double_min_width": 3.0,
+}
+
+
+def set_style(color_map=None, double=0.0, double_min_width=3.0):
+    STYLE["color_map"] = {k.upper(): v for k, v in (color_map or {}).items()}
+    STYLE["double"] = double
+    STYLE["double_min_width"] = double_min_width
+
+
+def tc(color: str) -> str:
+    """Color del tema activo para un color de la paleta base."""
+    return STYLE["color_map"].get(str(color).upper(), color)
 
 
 def _seed_from(key) -> int:
@@ -145,16 +169,38 @@ class Stroke:
         if len(pts) < 2:
             return VMobject()
         if self.dashed:
-            return _dashed_mob(pts, self.dash, self.gap, self.color, self.width,
+            return _dashed_mob(pts, self.dash, self.gap, tc(self.color), self.width,
                                self.opacity * opacity_mul)
         m = VMobject()
         m.set_points_as_corners(pts)
-        m.set_stroke(self.color, width=self.width,
+        m.set_stroke(tc(self.color), width=self.width,
                      opacity=self.opacity * opacity_mul)
         m.set_fill(opacity=0)
         m.cap_style = CapStyleType.ROUND
         m.joint_type = LineJointType.ROUND
         return m
+
+
+@dataclass
+class Fill:
+    """Relleno plano (tinta diluida / papel tostado) de un polígono 2D.
+    Dentro de un `Drawing` "ocupa" `fade` de longitud: aparece con un fundido
+    cuando el dibujo progresivo llega a él (normalmente tras su contorno)."""
+
+    points: np.ndarray
+    color: str = "#D8C39C"
+    opacity: float = 1.0
+    fade: float = 0.5
+    tag: str = ""
+    dashed: bool = False
+    width: float = 0.0
+
+    @property
+    def length(self) -> float:
+        return self.fade
+
+    def tip(self, p):  # el "rotulador" no dibuja rellenos
+        return None
 
 
 def _dashed_mob(pts, dash, gap, color, width, opacity) -> VMobject:
@@ -375,21 +421,130 @@ def _dash_polylines(pts, dash, gap):
     return out
 
 
-def merge_strokes(items, opacity_mul=1.0) -> VGroup:
+def _clip_polyline_x(pts, xmin, xmax):
+    """Partes de la polilínea con xmin <= x <= xmax (interpola los cruces).
+    Supone polilíneas densas (un segmento no cruza la franja completa)."""
+    def inside(q):
+        return xmin <= q[0] <= xmax
+
+    def cut(a, b, outer):
+        xb = xmin if outer[0] < xmin else xmax
+        t = (xb - a[0]) / (b[0] - a[0])
+        return a + (b - a) * t
+
+    runs, cur = [], []
+    for i, q in enumerate(pts):
+        if i == 0:
+            if inside(q):
+                cur.append(q)
+            continue
+        a = pts[i - 1]
+        ia, iq = inside(a), inside(q)
+        if ia and iq:
+            cur.append(q)
+        elif ia and not iq:
+            cur.append(cut(a, q, q))
+            runs.append(np.array(cur))
+            cur = []
+        elif not ia and iq:
+            cur = [cut(a, q, a), q]
+    if cur:
+        runs.append(np.array(cur))
+    return [r for r in runs if len(r) >= 2]
+
+
+def _clip_polygon_x(poly, xmin, xmax):
+    """Sutherland–Hodgman contra los semiplanos x >= xmin y x <= xmax."""
+    def clip(pts, keep, edge):
+        out = []
+        n = len(pts)
+        for i in range(n):
+            a, b = pts[i], pts[(i + 1) % n]
+            ia, ib = keep(a), keep(b)
+            if ia:
+                out.append(a)
+            if ia != ib:
+                t = (edge - a[0]) / (b[0] - a[0])
+                out.append(a + (b - a) * t)
+        return out
+    pts = list(poly)
+    if xmin > -1e8:
+        pts = clip(pts, lambda q: q[0] >= xmin, xmin)
+    if pts and xmax < 1e8:
+        pts = clip(pts, lambda q: q[0] <= xmax, xmax)
+    return np.array(pts) if len(pts) >= 3 else None
+
+
+def _ghost_points(s: "Stroke") -> np.ndarray:
+    """Segundo trazo de boceto (cacheado por trazo): mismo recorrido con otra
+    semilla y un leve desplazamiento, como un dibujante que repasa la línea."""
+    g = getattr(s, "_ghost", None)
+    if g is None or len(g) != len(s.points):
+        seed = int(abs(s.points[0][0] * 1000 + s.points[-1][1] * 7919)) % 100000
+        n = _normals(s.points)
+        rng = np.random.default_rng(seed)
+        k = np.linspace(0, 1, len(s.points))
+        off = 0.018 + 0.014 * np.sin(2 * np.pi * (k * rng.uniform(0.6, 1.6) + rng.uniform()))
+        g = s.points + n * off[:, None] * rng.choice([-1, 1])
+        s._ghost = g
+    return g
+
+
+def merge_strokes(items, opacity_mul=1.0, xclip=None) -> VGroup:
     groups: dict = {}
     order = []
+    fills: dict = {}
+    forder = []
+    dbl = STYLE["double"]
     for s, frac in items:
+        if isinstance(s, Fill):
+            op = round(s.opacity * opacity_mul * frac, 3)
+            if op <= 0.002:
+                continue
+            poly = np.asarray(s.points, float)
+            if xclip is not None:
+                poly = _clip_polygon_x(poly, *xclip)
+                if poly is None:
+                    continue
+            # orientación CCW para que los subcaminos se sumen (no se resten)
+            area = np.sum(poly[:, 0] * np.roll(poly[:, 1], -1) - np.roll(poly[:, 0], -1) * poly[:, 1])
+            if area < 0:
+                poly = poly[::-1]
+            key = (tc(s.color), op)
+            if key not in fills:
+                fills[key] = []
+                forder.append(key)
+            fills[key].append(_corner_beziers(np.vstack([poly, poly[:1]])))
+            continue
         pts = s.partial_points(frac)
         if len(pts) < 2:
             continue
-        key = (s.color, round(s.width, 2), round(s.opacity * opacity_mul, 3))
-        if key not in groups:
-            groups[key] = []
-            order.append(key)
-        polys = _dash_polylines(pts, s.dash, s.gap) if s.dashed else [pts]
-        for poly in polys:
-            groups[key].append(_corner_beziers(poly))
+        variants = [(pts, s.width, s.opacity)]
+        if dbl > 0 and not s.dashed and s.width >= STYLE["double_min_width"]:
+            gp = _ghost_points(s)
+            gp = gp[: len(pts)] if frac < 1 else gp
+            if len(gp) >= 2:
+                variants.append((gp, s.width * 0.42, s.opacity * 0.55 * dbl))
+        for vp, vw, vo in variants:
+            key = (tc(s.color), round(vw, 2), round(vo * opacity_mul, 3))
+            polys = _dash_polylines(vp, s.dash, s.gap) if s.dashed else [vp]
+            if xclip is not None:
+                polys = [q for poly in polys for q in _clip_polyline_x(poly, *xclip)]
+            if not polys:
+                continue
+            if key not in groups:
+                groups[key] = []
+                order.append(key)
+            for poly in polys:
+                groups[key].append(_corner_beziers(poly))
     g = VGroup()
+    for key in forder:
+        color, op = key
+        m = VMobject()
+        m.points = np.vstack(fills[key])
+        m.set_fill(color, opacity=op)
+        m.set_stroke(width=0, opacity=0)
+        g.add(m)
     for key in order:
         if not groups[key]:
             continue
@@ -433,7 +588,8 @@ class Drawing:
         total = sum(lens) or 1.0
         return lens, total
 
-    def render(self, p: float = 1.0, opacity_mul: float = 1.0) -> VGroup:
+    def render(self, p: float = 1.0, opacity_mul: float = 1.0,
+               xclip=None) -> VGroup:
         """Devuelve un VGroup con UN VMobject por estilo (color/grosor/opacidad):
         todos los trazos del mismo estilo van como subtrayectorias de un solo
         objeto. Es ~10x más rápido que un VMobject por trazo."""
@@ -450,7 +606,7 @@ class Drawing:
                     break
                 items.append((s, min(1.0, budget / max(s.length, 1e-9))))
                 budget -= L
-        return merge_strokes(items, opacity_mul)
+        return merge_strokes(items, opacity_mul, xclip)
 
     def tip(self, p: float):
         """Posición de la punta del rotulador para un progreso dado
@@ -466,6 +622,8 @@ class Drawing:
         budget = p * total
         for s, L in zip(self.strokes, lens):
             if budget <= s.length:
+                if isinstance(s, Fill):
+                    return None
                 return s.tip(budget / max(s.length, 1e-9)), s
             budget -= L
             if budget <= 0:
@@ -485,6 +643,8 @@ def restyle(drawing: "Drawing", dashed=True, color=PENCIL, width_mul=0.7,
     """Copia de un dibujo con otro estilo (p. ej. carcasa "fantasma")."""
     out = Drawing(pause=drawing.pause)
     for s in drawing.strokes:
+        if isinstance(s, Fill):
+            continue
         out.strokes.append(Stroke(s.points, color=color,
                                   width=s.width * width_mul,
                                   opacity=s.opacity if opacity is None else opacity,
@@ -515,3 +675,37 @@ def handwriting_path(mob, rows=1) -> np.ndarray:
     xs = np.linspace(left, right, n_chars * 4)
     ys = bottom + (top - bottom) * (0.5 + 0.42 * np.sin(np.linspace(0, n_chars * 2 * np.pi, len(xs))))
     return np.stack([xs, ys, np.zeros_like(xs)], axis=1)
+
+
+def live(build, slots=220):
+    """Como `always_redraw`, pero con un número FIJO de "ranuras" VMobject.
+
+    - `always_redraw` usa `become()`, que alinea jerarquías cuando cambia el
+      número de hijos y puede reordenar capas (un relleno tapando un trazo).
+    - Reemplazar los hijos tampoco sirve: Manim cachea la lista plana de
+      objetos al iniciar cada animación y seguiría dibujando los viejos.
+    Aquí las ranuras nunca cambian de identidad: en cada frame se copian los
+    puntos y el estilo de las hojas construidas, en el mismo orden (z-order),
+    y las ranuras sobrantes quedan vacías."""
+    pool = [VMobject() for _ in range(slots)]
+    holder = VGroup(*pool)
+    attrs = ("fill_rgbas", "stroke_rgbas", "background_stroke_rgbas",
+             "stroke_width", "background_stroke_width")
+
+    def upd(m):
+        leaves = [x for x in build().get_family() if len(x.points) > 0]
+        if len(leaves) > slots:
+            raise RuntimeError(f"live(): {len(leaves)} hojas > {slots} ranuras")
+        for i, slot in enumerate(pool):
+            if i < len(leaves):
+                src = leaves[i]
+                slot.points = src.points
+                for a in attrs:
+                    setattr(slot, a, getattr(src, a))
+                slot.cap_style = src.cap_style
+                slot.joint_type = src.joint_type
+            elif len(slot.points):
+                slot.points = np.zeros((0, 3))
+    upd(holder)
+    holder.add_updater(upd)
+    return holder

@@ -13,9 +13,10 @@ import math
 
 import numpy as np
 
-from common.sketch import (BLUE, GREEN, INK, ORANGE, PENCIL, RED, Drawing,
-                           Stroke, _seed_from, arrow_head, harrow, hatch,
-                           hcircle, hline, hpath, wobble)
+from common.sketch import (BLUE, FILL, FILL_DARK, GREEN, INK, ORANGE, PENCIL,
+                           RED, SHADE, Drawing, Fill, Stroke, _seed_from,
+                           arrow_head, harrow, hatch, hcircle, hline, hpath,
+                           wobble)
 
 TAU = 2 * math.pi
 
@@ -36,6 +37,8 @@ class EndView:
     # ------------------------------------------------------------ estáticos
     def casing(self) -> Drawing:
         d = Drawing()
+        disk = np.array([P(self.c, self.R, a) for a in np.linspace(0, TAU, 120)])
+        d.add(Fill(disk, color=FILL, opacity=0.45, fade=0.3))
         d.add(hcircle(self.c, self.R, color=PENCIL, width=self.W * 0.75, seed=11,
                       dashed=True, dash=0.16, gap=0.11, overlap=0.0))
         d.add(hcircle(self.c, self.R * 0.93, color=PENCIL, width=self.W * 0.45,
@@ -55,6 +58,7 @@ class EndView:
         d = Drawing()
         d.add(Stroke(wobble(poly, amp=0.012, seed=_seed_from(("ev_mag", name))),
                      color=col, width=self.W))
+        d.add(Fill(poly, color=FILL_DARK, opacity=0.85, fade=0.25))
         d.add(hatch(poly[:, :2], spacing=0.12, angle=62 if top else 118,
                     color=col, width=self.W * 0.5, seed=_seed_from(("evh", name)),
                     opacity=0.7, holes=[(self.magnet_label_pos(name), 0.3)]))
@@ -104,6 +108,7 @@ class EndView:
                    self.c + [x1, h, 0], self.c + [x0, h, 0], self.c + [x0, -h, 0]]
             d.add(Stroke(wobble(np.array(pts), amp=0.004, seed=400 + k),
                          color=INK, width=self.W * 0.8))
+            d.add(Fill(np.array(pts)[:-1], color=FILL_DARK, opacity=0.95, fade=0.1))
             d.add(hatch(np.array(pts)[:-1, :2], spacing=0.07, angle=40,
                         color=INK, width=self.W * 0.35, seed=410 + k,
                         opacity=0.6))
@@ -133,6 +138,7 @@ class EndView:
             outer = [P(c, self.r_comm, a) for a in al]
             inner = [P(c, self.r_comm - 0.16, a) for a in al[::-1]]
             poly = np.array(outer + inner + [outer[0]])
+            d.add(Fill(poly, color=FILL_DARK, opacity=0.95, fade=0.05))
             d.add(Stroke(wobble(poly, amp=0.003, seed=510 + k), color=INK,
                          width=self.W * 0.7))
         # bobina vista de canto: brazo + conexiones
@@ -153,6 +159,9 @@ class EndView:
         d = Drawing()
         for which in ("A", "B"):
             p = self.side_pos(theta, which)
+            disk = np.array([p + [0.3 * math.cos(a), 0.3 * math.sin(a), 0]
+                             for a in np.linspace(0, TAU, 40)])
+            d.add(Fill(disk, color=FILL, opacity=1.0, fade=0.05))
             d.add(hcircle(p, 0.3, color=RED, width=self.W * 0.9,
                           seed=600 + (which == "B"), amp=0.006, start=theta))
         return d
@@ -241,6 +250,7 @@ class TorqueGraph:
             # inicial y se vuelve negativo (frena) tras media vuelta
             vals = vals * np.sign(math.sin(theta0 - 0.35) or 1.0)
         pts = np.array([self.xy(f, v) for f, v in zip(phis, vals)])
+        self.last_pts = pts
         return Stroke(wobble(pts, amp=0.008, seed=1100 + rectified),
                       color=GREEN if rectified else PENCIL,
                       width=self.W * (0.95 if rectified else 0.7),

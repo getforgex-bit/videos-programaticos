@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [
     motionCanvas({
       // Cada video tiene su propio proyecto Motion Canvas.
-      project: ['./src/project.ts', './src/v01_motor.ts'],
+      project: ['./src/project.ts', './src/v01_motor.ts', './src/v01_motor_v2.ts'],
     }),
   ],
 });

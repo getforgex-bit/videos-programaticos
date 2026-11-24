@@ -21,11 +21,12 @@ const nearest = (pen: PenSample[], f: number, dir: 1 | -1, max: number) => {
   return null;
 };
 
-export const MarkerPen: React.FC<{pen: PenSample[]; offset?: number; scale?: number}> = ({
-  pen,
-  offset = 0,
-  scale = 1,
-}) => {
+export const MarkerPen: React.FC<{
+  pen: PenSample[];
+  offset?: number;
+  scale?: number;
+  variant?: 'marker' | 'pencil';
+}> = ({pen, offset = 0, scale = 1, variant = 'marker'}) => {
   const frame = useCurrentFrame() - offset;
   if (frame < 0 || frame >= pen.length + FADE) return null;
   const prev = nearest(pen, Math.min(frame, pen.length - 1), -1, GAP_TRAVEL + FADE);
@@ -100,7 +101,9 @@ export const MarkerPen: React.FC<{pen: PenSample[]; offset?: number; scale?: num
       >
         <rect x={10} y={14} width={L - 10} height={32} rx={14} fill="#000" />
       </svg>
-      {/* rotulador */}
+      {variant === 'pencil' ? (
+        <Pencil L={L} color={color} lift={lift} />
+      ) : (
       <svg
         width={L}
         height={60}
@@ -124,6 +127,35 @@ export const MarkerPen: React.FC<{pen: PenSample[]; offset?: number; scale?: num
         <rect x={L - 40} y={13} width={40} height={34} rx={12} fill={color} />
         <rect x={L - 36} y={17} width={10} height={26} rx={4} fill="#ffffff" opacity={0.25} />
       </svg>
+      )}
     </div>
   );
 };
+
+/** Lápiz de madera con mina del color de la tinta (estilo sepia). */
+const Pencil: React.FC<{L: number; color: string; lift: number}> = ({L, color, lift}) => (
+  <svg
+    width={L}
+    height={60}
+    style={{
+      position: 'absolute',
+      left: 0,
+      top: -30 - lift * 8,
+      transformOrigin: '0px 30px',
+      transform: 'rotate(-38deg)',
+      overflow: 'visible',
+    }}
+  >
+    {/* mina */}
+    <path d="M 0 30 L 12 26 L 12 34 Z" fill={color} />
+    {/* madera afilada */}
+    <path d="M 10 26.5 L 40 16 L 40 44 L 10 33.5 Z" fill="#E2C08C" stroke="#9C7A4C" strokeWidth={1.2} />
+    {/* cuerpo hexagonal */}
+    <rect x={40} y={16} width={L - 95} height={28} fill="#B9772E" />
+    <rect x={40} y={16} width={L - 95} height={9} fill="#D08E3E" />
+    <rect x={40} y={35} width={L - 95} height={9} fill="#94591F" />
+    {/* virola y goma */}
+    <rect x={L - 55} y={15} width={22} height={30} fill="#B49A62" stroke="#7A6339" strokeWidth={1} />
+    <rect x={L - 33} y={16} width={30} height={28} rx={8} fill="#C9776A" />
+  </svg>
+);

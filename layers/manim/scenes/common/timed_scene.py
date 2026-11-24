@@ -106,7 +106,8 @@ class TimedScene(MovingCameraScene):
             if 0 < v < 1:
                 hit = d.tip_stroke(v)
                 if hit is not None:
-                    tip, color = hit[0], hit[1].color
+                    from .sketch import tc
+                    tip, color = hit[0], tc(hit[1].color)
                     break
         if tip is None:
             self._pen[fi] = None
@@ -117,6 +118,21 @@ class TimedScene(MovingCameraScene):
         px = ((tip[0] - cx) / fw + 0.5) * config.pixel_width
         py = (0.5 - (tip[1] - cy) / fh) * config.pixel_height
         self._pen[fi] = [round(float(px), 1), round(float(py), 1), color]
+
+    # ---------------------------------------------------------- cámara
+    def px(self, x, y=0.0):
+        """Coordenadas de mundo → píxeles de pantalla (cámara actual)."""
+        frame = self.camera.frame
+        cx, cy = frame.get_center()[:2]
+        return (((x - cx) / frame.width + 0.5) * config.pixel_width,
+                (0.5 - (y - cy) / frame.height) * config.pixel_height)
+
+    def track_camera(self):
+        """Exporta la cámara por frame (para desenfoque de movimiento)."""
+        f = self.camera.frame
+        self.track("cam_x", lambda: f.get_center()[0])
+        self.track("cam_y", lambda: f.get_center()[1])
+        self.track("cam_w", lambda: f.width)
 
     # --------------------------------------------------------------- export
     def tear_down(self):

@@ -1,14 +1,14 @@
-# Video 01 — "El motor invisible" · Estilo 2: Pizarra / dibujo a mano
+# Video 01 — "El motor invisible" · Estilo 2: Dibujo a mano (v1 pizarra → v2 sepia)
 
 | Campo | Valor |
 | :--- | :--- |
 | **Idea** | A — El motor invisible (cinematográfico, revelación, precisión mecánica) |
 | **Estilo visual** | 2 — Whiteboard / dibujo a mano |
 | **Rama** | `version-3` |
-| **Iteración** | v1 (primera entrega) |
-| **Archivo final** | `output/v01-motor-invisible-pizarra.mp4` (no versionado; se regenera con `scripts/v01/build.sh`) |
+| **Iteración** | v2 (sepia dinámico) · historial: v1 pizarra |
+| **Archivos** | v2: `output/v01-motor-invisible-v2-sepia.mp4` (`scripts/v01/build-v2.sh`) · v1: `output/v01-motor-invisible-pizarra.mp4` (`scripts/v01/build.sh`). No versionados. |
 | **Formato** | 1920×1080 · 30 fps · H.264 (CRF 18) + AAC 192k · 89,8 s · 20 MB |
-| **Puntaje del usuario** | _pendiente_ |
+| **Puntaje del usuario** | v1: sin número ("me agrada… bien") · v2: _pendiente_ |
 
 ---
 
@@ -133,4 +133,52 @@ Variantes: `SKIP_MANIM=1 SKIP_MC=1 scripts/v01/build.sh` (sólo re-componer), `Q
 
 | Iteración | Puntaje | Le gustó | No le gustó | Cambios aplicados |
 | :-- | :-- | :-- | :-- | :-- |
-| v1 | _pendiente_ | _pendiente_ | _pendiente_ | — |
+| v1 | Sin número ("Me agrada", "Bien") | Los diseños: motor, piezas, explicación. | Estilo distinto al imaginado (quería tinta sepia sobre pergamino, envió referencia). Aburrido: pide más dopamina, cambios, efectos, movimiento entre escenas y menos información a la vez. | Ver sección 12 (v2). |
+| v2 | _pendiente_ | _pendiente_ | _pendiente_ | — |
+
+
+---
+
+## 12. Iteración v2 — sepia dinámico
+
+### 12.1 Qué pidió el usuario y cómo lo interpreté
+
+| Pedido | Interpretación concreta |
+| :-- | :-- |
+| "El estilo no se parece a lo que imaginaba" + referencia | Ilustración técnica a **tinta sepia sobre pergamino**: contorno grueso y doble, relleno tostado, sombreado con rayado, grano de papel, viñeta oscura. Se copió el **estilo**, no el diseño (el motor, la física y las piezas son los de v1). |
+| "Mucho más dopaminérgico", "aburrido" | Ritmo: **todo cuadrado a 100 BPM** (medio pulso = 0,3 s). Un cambio visual cada 0,3–1,5 s. Impactos (sacudida + destello + golpe de zoom + boom) en los momentos clave. Música con batería, subidas y "drops" alineados a la historia. |
+| "Más cambios, efectos y movimiento entre escenas" | Cámara siempre viva (seguimiento suave con deriva de "cámara en mano"); transiciones con movimiento: **zoom a través** de la cara del motor (M1→M2), **barrido con desenfoque** (M2→resumen), **mancha de tinta** (resumen→M3); revelado por **escáner de rayos X** con resplandor. |
+| "Reducir la información a la vez y presentarla dinámicamente" | Una idea por golpe: recorrido de **enfoque pieza por pieza** (una etiqueta a la vez, el resto atenuado); la **ecuación** y la **gráfica** viven en otras zonas del pergamino y la cámara viaja hasta ellas; subtítulos largos → **texto cinético** de 1–3 palabras. Duración: 89,8 s → **49,2 s**. |
+
+### 12.2 Cambios principales
+
+- **Tema sepia** (`common/themes.py`): remapeo de colores en el render, rellenos (`Fill`), doble trazo de boceto y sombreado rayado del cilindro calculado sobre la geometría real.
+- **Acentos de color apagados** (decisión propia): sanguina = corriente/N, índigo grisáceo = campo/S, oliva = fuerza, ocre = giro. La referencia es casi monocroma; se mantienen los acentos porque sostienen la explicación. Para monocromo puro basta con mapear esos colores al sepia en `themes.py`.
+- **Escenas nuevas** `scenes_v2.py` (v1 intacto en `scenes.py`): gancho en 2,7 s, escáner, recorrido de enfoque, física en golpes, reconstrucción con piezas que llegan volando y escáner inverso.
+- **Resumen Motion Canvas** `resumen_v2.tsx`: cajas que entran con rebote, sombra de tinta y un pulso de corriente que recorre el ciclo.
+- **Remotion** `src/v01v2/`: pergamino procedural con textura en modo multiplicar sobre todo, filtro de tinta (grano + temblor), desenfoque de movimiento a partir de la cámara real de Manim, texto cinético con "nota de papel" para legibilidad, impactos, resplandor del escáner y lápiz en lugar de rotulador.
+- **Audio** `scripts/v01/build_v2.py`: música a 100 BPM por secciones ancladas a marcas reales (intro → groove → subida → drop en rayos X → corte antes del conmutador → drop en el giro continuo → subida → golpe en el ensamblado → golpe final en el título) + efectos sincronizados (lápiz, pops por palabra, whooshes, impactos, escáner, chispas). Volumen: −14,8 LUFS.
+
+### 12.3 Fallos encontrados en v2 y solución
+
+| Fallo | Causa | Solución |
+| :-- | :-- | :-- |
+| Los símbolos ⊙/⊗ desaparecían en el zoom | `always_redraw` usa `become()`, que alinea jerarquías cuando cambia el número de hijos (aparecen chispas) y desordena capas: el relleno tapaba el símbolo. | `live()` con **ranuras fijas** de VMobject: se copian puntos y estilo hoja a hoja, en orden. |
+| "Fantasmas" del rotor en una posición anterior | Reemplazar los hijos no sirve: Manim cachea la lista plana de objetos al iniciar cada animación. | Mismo `live()` con ranuras (la identidad de los objetos nunca cambia). |
+| NaN en el audio | El zumbido usaba `v ** 0.9` con valores levemente negativos tras el filtro. | Recorte a ≥ 0 + `nan_to_num` en el master. |
+| Mezcla con exceso de graves | Bombo, bajo e impactos ~20 dB sobre los agudos. | Re-balance + paso alto a 35 Hz en la música. |
+| Vetas horizontales en el pergamino | Capa de "fibras" demasiado direccional y opaca. | Frecuencia menos anisotrópica y opacidad 0,035. |
+| Textos cinéticos ilegibles sobre dibujos densos | Mancha de fondo oscura y pequeña. | "Nota de papel" clara, con borde y sombra, dimensionada al texto. |
+| `mix-blend-mode: multiply` sin efecto | Dentro de contenedores transformados CSS aísla el grupo. | La textura del pergamino va arriba de todo en modo multiplicar. |
+
+### 12.4 Métricas v2
+
+| Paso | Tiempo |
+| :-- | :-- |
+| Manim (3 escenas en paralelo, 1080p30) | ≈ 6 min |
+| Motion Canvas | ≈ 40 s |
+| Línea de tiempo + audio | ≈ 5 s |
+| Remotion (1 476 frames) | ≈ 3 min |
+| **Total `scripts/v01/build-v2.sh`** | **≈ 10 min** |
+
+Duración 49,2 s · 15 textos cinéticos · 9 impactos · 3 transiciones con movimiento.

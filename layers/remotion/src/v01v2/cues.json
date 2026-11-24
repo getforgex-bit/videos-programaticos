@@ -1,0 +1,220 @@
+{
+ "_doc": "Texto cinético del video 01 v2. Cada cue se ancla a una marca real de Manim (seg+mark) con desfase en medios pulsos (1 = 0,3 s = 9 frames). Lo leen Remotion (dibujo) y scripts/v01/build_v2.py (sonidos e impactos). Colores: {texto|red|blue|green|orange|ink}.",
+ "cues": [
+  {
+   "seg": "M1",
+   "mark": "run",
+   "delay": 1,
+   "hold": 5,
+   "words": [
+    "¿Por qué",
+    "gira?"
+   ],
+   "x": 470,
+   "y": 945,
+   "size": 112,
+   "stack": false
+  },
+  {
+   "seg": "M1",
+   "mark": "look",
+   "delay": 0,
+   "hold": 2,
+   "words": [
+    "Veamos",
+    "adentro…"
+   ],
+   "x": 470,
+   "y": 945,
+   "size": 92,
+   "stack": false
+  },
+  {
+   "seg": "M1",
+   "mark": "xray_hit",
+   "delay": 0,
+   "hold": 3,
+   "words": [
+    "¡Rayos X!"
+   ],
+   "x": 470,
+   "y": 945,
+   "size": 118,
+   "stamp": true
+  },
+  {
+   "seg": "M1",
+   "mark": "how",
+   "delay": 0,
+   "hold": 2,
+   "words": [
+    "¿Cómo",
+    "lo hace?"
+   ],
+   "x": 470,
+   "y": 945,
+   "size": 100,
+   "stack": false
+  },
+  {
+   "seg": "M2",
+   "mark": "field",
+   "delay": 1,
+   "hold": 3,
+   "words": [
+    "Campo",
+    "{magnético|blue}"
+   ],
+   "x": 260,
+   "y": 300,
+   "size": 76,
+   "stack": true
+  },
+  {
+   "seg": "M2",
+   "mark": "current",
+   "delay": 0,
+   "hold": 4,
+   "words": [
+    "{Corriente|red}"
+   ],
+   "x": 260,
+   "y": 300,
+   "size": 86
+  },
+  {
+   "seg": "M2",
+   "mark": "force",
+   "delay": 0,
+   "hold": 4,
+   "words": [
+    "¡{FUERZA|green}!"
+   ],
+   "x": 270,
+   "y": 300,
+   "size": 104,
+   "stamp": true
+  },
+  {
+   "seg": "M2",
+   "mark": "torque",
+   "delay": 1,
+   "hold": 4,
+   "words": [
+    "¡{Gira|orange}!"
+   ],
+   "x": 270,
+   "y": 300,
+   "size": 110
+  },
+  {
+   "seg": "M2",
+   "mark": "dead",
+   "delay": 0,
+   "hold": 4,
+   "words": [
+    "¿Y",
+    "ahora?"
+   ],
+   "x": 270,
+   "y": 300,
+   "size": 92,
+   "stack": true
+  },
+  {
+   "seg": "M2",
+   "mark": "comm",
+   "delay": 1,
+   "hold": 3,
+   "words": [
+    "El",
+    "truco…"
+   ],
+   "x": 300,
+   "y": 260,
+   "size": 96,
+   "stack": true
+  },
+  {
+   "seg": "M2",
+   "mark": "flip",
+   "delay": 0,
+   "hold": 4,
+   "words": [
+    "¡Se invierte",
+    "la {corriente|red}!"
+   ],
+   "x": 960,
+   "y": 175,
+   "size": 84,
+   "stack": true,
+   "stamp": true
+  },
+  {
+   "seg": "M2",
+   "mark": "drop",
+   "delay": 1,
+   "hold": 6,
+   "words": [
+    "¡Giro",
+    "{continuo|orange}!"
+   ],
+   "x": 270,
+   "y": 300,
+   "size": 92,
+   "stack": true
+  },
+  {
+   "seg": "MC",
+   "mark": "start",
+   "delay": 1,
+   "hold": 6,
+   "words": [
+    "En",
+    "resumen"
+   ],
+   "x": 960,
+   "y": 975,
+   "size": 80
+  },
+  {
+   "seg": "M3",
+   "mark": "fly",
+   "delay": 1,
+   "hold": 4,
+   "words": [
+    "¡A",
+    "armarlo!"
+   ],
+   "x": 960,
+   "y": 985,
+   "size": 84
+  },
+  {
+   "seg": "M3",
+   "mark": "spin",
+   "delay": 0,
+   "hold": 4,
+   "words": [
+    "¡{Funciona|orange}!"
+   ],
+   "x": 1250,
+   "y": 975,
+   "size": 112,
+   "stamp": true
+  }
+ ],
+ "title": {
+  "seg": "M3",
+  "mark": "title",
+  "delay": 1,
+  "text": "El motor invisible",
+  "tagline": [
+   "{electricidad|red}",
+   "+",
+   "{magnetismo|blue}",
+   "=",
+   "{movimiento|orange}"
+  ]
+ }
+}

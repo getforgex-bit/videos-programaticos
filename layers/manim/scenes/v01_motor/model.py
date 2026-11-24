@@ -20,8 +20,9 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from common.sketch import (BLUE, INK, PENCIL, RED, Drawing, Stroke, _seed_from,
-                           hatch, hline, hpath, wobble)
+from common.sketch import (BLUE, FILL, FILL_DARK, INK, PENCIL, RED, SHADE,
+                           Drawing, Fill, Stroke, _seed_from, hatch, hline,
+                           hpath, wobble)
 
 TAU = 2 * math.pi
 
@@ -207,6 +208,69 @@ class MotorModel:
                 d.add(self._s(arc, st, ("bellh", i), width=self.W * 0.85))
         return d
 
+    # ------------------------------------------------ volumen (estilo v2)
+    def _visible_side(self, a_s):
+        """Signo hacia el que la superficie mira al espectador desde la
+        generatriz de silueta a_s."""
+        return 1 if E(a_s + 0.3) @ self.proj.view > 0 else -1
+
+    def body_fill(self, st, tone=FILL) -> Drawing:
+        """Relleno plano del cilindro + cara frontal (más oscura)."""
+        d = Drawing()
+        pts = np.vstack([ring(X_BACK, R_CASE, 0, TAU, 72), ring(X_FRONT, R_CASE, 0, TAU, 72)])
+        P = self._p(pts, st)
+        hull = _convex_hull(P[:, :2])
+        d.add(Fill(P[hull], color=tone, opacity=1.0, fade=0.4))
+        front = self._p(ring(X_FRONT + 0.01, R_CASE, 0, TAU, 90), st)
+        d.add(Fill(front, color=FILL_DARK, opacity=0.55, fade=0.3))
+        return d
+
+    def body_shade(self, st) -> Drawing:
+        """Banda de sombra rayada en la parte baja del cilindro (y bajo la
+        tapa frontal), como en una ilustración técnica a tinta."""
+        d = Drawing()
+        sil = self.proj.silhouette_angles()
+        # la generatriz "de abajo" es la de menor y en pantalla
+        ys = [self._p([E(a) * R_CASE], st)[0][1] for a in sil]
+        a_s = sil[int(np.argmin(ys))]
+        sg = self._visible_side(a_s)
+        for k, (d0, d1, dens) in enumerate(((0.0, 0.55, 0.075), (0.55, 0.95, 0.13))):
+            a0, a1 = a_s + sg * d0, a_s + sg * d1
+            band = np.vstack([ring(X_BACK + 0.02, R_CASE, a0, a1, 24),
+                              ring(X_FRONT - 0.02, R_CASE, a1, a0, 24)])
+            poly = self._p(band, st)[:, :2]
+            d.add(hatch(poly, spacing=dens, angle=-58, color=SHADE,
+                        width=self.W * 0.42, seed=_seed_from(("bshade", k)),
+                        opacity=0.7))
+        # sombra en la cara frontal (media luna inferior)
+        moon = np.vstack([ring(X_FRONT + 0.02, R_CASE * 0.97, math.radians(200), math.radians(330), 30),
+                          ring(X_FRONT + 0.02, R_CASE * 0.86, math.radians(330), math.radians(200), 30)])
+        d.add(hatch(self._p(moon, st)[:, :2], spacing=0.07, angle=-40, color=SHADE,
+                    width=self.W * 0.38, seed=_seed_from("fshade"), opacity=0.65))
+        return d
+
+    def battery_fill(self, st) -> Drawing:
+        d = Drawing()
+        pts = np.vstack([self._bat_ring(self.BAT_H, self.BAT_R, 0, TAU, 48),
+                         self._bat_ring(-self.BAT_H, self.BAT_R, 0, TAU, 48)])
+        P = self._p(pts, st)
+        hull = _convex_hull(P[:, :2])
+        d.add(Fill(P[hull], color=FILL, opacity=1.0, fade=0.3))
+        top = self._p(self._bat_ring(self.BAT_H, self.BAT_R, 0, TAU, 48), st)
+        d.add(Fill(top, color=FILL_DARK, opacity=0.6, fade=0.2))
+        # sombra lateral derecha
+        v = self.proj.view
+        a_s = math.atan2(-v[0], v[2])
+        band = []
+        for dy in (-self.BAT_H, self.BAT_H):
+            al = np.linspace(a_s - 0.9, a_s, 12) if dy < 0 else np.linspace(a_s, a_s - 0.9, 12)
+            for a in al:
+                band.append(self.BAT + [self.BAT_R * math.cos(a), dy, self.BAT_R * math.sin(a)])
+        poly = self._p(band, st)[:, :2]
+        d.add(hatch(poly, spacing=0.07, angle=70, color=SHADE, width=self.W * 0.38,
+                    seed=_seed_from("batsh"), opacity=0.6))
+        return d
+
     def bands(self, st) -> Drawing:
         """Detalles del exterior que desaparecen con la transparencia."""
         d = Drawing()
@@ -263,6 +327,8 @@ class MotorModel:
             side2 = [(X_PROP - 0.06 * (uu - 0.1), *self._blade(a, uu, -ww * 0.75))
                      for uu, ww in zip(u[::-1], w[::-1])]
             outline = np.array(side1 + side2 + [side1[0]])
+            d.strokes.insert(0, Fill(self._p(outline, st, off), color=FILL_DARK,
+                                     opacity=0.85, fade=0.05))
             d.add(self._s(outline, st, ("blade", k), offset3=off, amp=0.008))
         return d
 
@@ -303,6 +369,13 @@ class MotorModel:
             face = np.vstack([ring(x_f, r_out, a0, a1, 50),
                               ring(x_f, r_in, a1, a0, 50)])
             face = np.vstack([face, face[:1]])
+            # relleno: superficie exterior del imán (cara + lomo)
+            shell = np.vstack([ring(x_f, r_out if top else r_in, a0, a1, 30),
+                               ring(x_b, r_out if top else r_in, a1, a0, 30)])
+            d.strokes.append(Fill(self._p(shell, st, off), color=FILL, opacity=0.9,
+                                  fade=0.2))
+            d.strokes.append(Fill(self._p(face, st, off), color=FILL_DARK,
+                                  opacity=0.9, fade=0.2))
             d.add(self._s(face, st, ("magface", name), color=col, offset3=off,
                           amp=0.01))
             for k, a in enumerate((a0, a1)):
@@ -517,6 +590,7 @@ def box_strokes(model, st, center, axes, half, key, width=4.0, color=INK,
         d.add(Stroke(wobble(np.array([P[near], P[k]]), amp=0.003,
                             seed=_seed_from((key, j))), color=color,
                      width=width * 0.8))
+    d.strokes.insert(0, Fill(P[hull], color=FILL_DARK, opacity=0.9, fade=0.05))
     if hatch_color:
         d.add(hatch(P[hull][:, :2], spacing=0.055, angle=35, color=hatch_color,
                     width=width * 0.4, seed=_seed_from((key, "h")), opacity=0.55))
